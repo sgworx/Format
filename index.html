@@ -3,66 +3,74 @@
 <head>
   <meta charset="UTF-8">
   <title>forMat</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div class="canvas">
-    <div class="top-bar">
-      <img src="assets/FormatLogo.png" class="logo" alt="forMat Logo">
-      <img src="assets/Login.png" class="user-icon" alt="User">
+  <div class="container">
+    <!-- Header -->
+    <div class="header">
+      <img src="FormatLogo.png" alt="forMat Logo" class="logo">
+      <img src="Login.png" alt="User" class="user-icon">
     </div>
-    
-    <div class="tabs">
+
+    <!-- Top toolbar -->
+    <div class="toolbar">
       <span>Capture</span>
-      <span class="project-label">Project 4 XYZ...</span>
-    </div>
-    
-    <div class="viewer" id="image-area">
-      <p class="placeholder-text">Tap gallery or camera to begin</p>
+      <span>Project 4 XYZ...</span>
     </div>
 
-    <div class="controls">
-      <label class="icon-button">
-        <input type="file" accept="image/*" id="galleryInput" hidden>
-        <img src="assets/GalleryIcon.png" alt="Gallery">
+    <!-- Canvas area -->
+    <div class="canvas-area">
+      <p class="placeholder">Tap gallery or camera to begin</p>
+      <img id="image-preview" />
+    </div>
+
+    <!-- Bottom buttons -->
+    <div class="button-bar" id="button-bar">
+      <label for="image-input">
+        <img src="GalleryIcon.png" class="button-icon" />
       </label>
-
-      <div class="camera-button"></div>
-
-      <button class="icon-button" id="forwardButton">
-        <img src="assets/ForwardButton.png" alt="Forward">
+      <input type="file" id="image-input" accept="image/*" />
+      <div class="button-center"></div>
+      <button id="forward-button" class="button-icon">
+        <img src="ForwardButton.png" alt="Forward" />
       </button>
     </div>
 
-    <div class="prompt-area hidden" id="promptArea">
-      <input type="text" placeholder="Design Prompt..." id="promptInput">
+    <!-- Prompt and keyboard -->
+    <div class="prompt-section" id="prompt-section">
+      <input type="text" placeholder="Design Prompt..." />
       <div class="keyboard">
-        <div class="suggestions">Suggest&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Suggest&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Suggest</div>
-        <div class="keys">QWERTYUIOP<br>ASDFGHJKL<br>ZXCVBNM</div>
-        <div class="bottom-row">123 &nbsp;&nbsp; space &nbsp;&nbsp; Go</div>
+        <div>Suggest  Suggest  Suggest</div>
+        <div>QWERTYUIOP</div>
+        <div>ASDFGHJKL</div>
+        <div>ZXCVBNM</div>
+        <div>123 space Go</div>
       </div>
     </div>
   </div>
 
   <script>
-    const galleryInput = document.getElementById('galleryInput');
-    const imageArea = document.getElementById('image-area');
-    const forwardButton = document.getElementById('forwardButton');
-    const promptArea = document.getElementById('promptArea');
+    const imageInput = document.getElementById('image-input');
+    const imagePreview = document.getElementById('image-preview');
+    const placeholder = document.querySelector('.placeholder');
+    const promptSection = document.getElementById('prompt-section');
+    const forwardButton = document.getElementById('forward-button');
+    const buttonBar = document.getElementById('button-bar');
 
-    galleryInput.addEventListener('change', e => {
+    imageInput.addEventListener('change', e => {
       const file = e.target.files[0];
       if (file) {
-        const img = document.createElement('img');
-        img.src = URL.createObjectURL(file);
-        img.className = 'preview';
-        imageArea.innerHTML = '';
-        imageArea.appendChild(img);
+        const url = URL.createObjectURL(file);
+        imagePreview.src = url;
+        imagePreview.style.display = 'block';
+        placeholder.style.display = 'none';
       }
     });
 
     forwardButton.addEventListener('click', () => {
-      promptArea.classList.remove('hidden');
+      promptSection.style.display = 'flex';
+      buttonBar.style.display = 'none';
     });
   </script>
 </body>
