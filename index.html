@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>forMat</title>
   <link rel="stylesheet" href="style.css" />
 </head>
@@ -9,68 +10,106 @@
   <div class="container">
     <!-- Header -->
     <div class="header">
-      <img src="FormatLogo.png" alt="forMat Logo" class="logo">
-      <img src="Login.png" alt="User" class="user-icon">
+      <img src="assets/FormatLogo.png" alt="forMat Logo" class="logo" />
+      <div class="project-name">
+        <span id="projectName">Project 4 XYZ...</span>
+        <button id="editProjectBtn">✎</button>
+        <input type="text" id="projectInput" style="display:none;" />
+      </div>
+      <img src="assets/Login.png" alt="User Icon" class="user-icon" />
     </div>
 
-    <!-- Top toolbar -->
-    <div class="toolbar">
+    <!-- Divider -->
+    <div class="divider">
       <span>Capture</span>
-      <span>Project 4 XYZ...</span>
     </div>
 
-    <!-- Canvas area -->
-    <div class="canvas-area">
-      <p class="placeholder">Tap gallery or camera to begin</p>
-      <img id="image-preview" />
+    <!-- Image Canvas Area -->
+    <div id="canvasArea" class="canvas">
+      <p id="placeholderText">Tap gallery or camera to begin</p>
+      <img id="previewImage" src="" alt="" style="display:none;" />
     </div>
 
-    <!-- Bottom buttons -->
-    <div class="button-bar" id="button-bar">
-      <label for="image-input">
-        <img src="GalleryIcon.png" class="button-icon" />
+    <!-- Footer Buttons -->
+    <div class="footer">
+      <!-- Gallery Button -->
+      <label for="galleryInput">
+        <img src="assets/GalleryIcon.png" alt="Gallery Icon" class="footer-button" />
       </label>
-      <input type="file" id="image-input" accept="image/*" />
-      <div class="button-center"></div>
-      <button id="forward-button" class="button-icon">
-        <img src="ForwardButton.png" alt="Forward" />
+      <input type="file" id="galleryInput" accept="image/*" style="display:none;" />
+
+      <!-- Camera Button -->
+      <button class="middle-dot" id="cameraButton"></button>
+      <input type="file" id="cameraInput" accept="image/*" capture="environment" style="display:none;" />
+
+      <!-- Forward Button -->
+      <button id="forwardButton" class="footer-button forward">
+        <img src="assets/ForwardButton.png" alt="Forward Icon" />
       </button>
     </div>
 
-    <!-- Prompt and keyboard -->
-    <div class="prompt-section" id="prompt-section">
-      <input type="text" placeholder="Design Prompt..." />
-      <div class="keyboard">
-        <div>Suggest  Suggest  Suggest</div>
-        <div>QWERTYUIOP</div>
-        <div>ASDFGHJKL</div>
-        <div>ZXCVBNM</div>
-        <div>123 space Go</div>
-      </div>
+    <!-- Prompt Input Area -->
+    <div class="prompt-area" id="promptArea" style="display:none;">
+      <input type="text" id="designPrompt" placeholder="Design Prompt..." />
     </div>
   </div>
 
   <script>
-    const imageInput = document.getElementById('image-input');
-    const imagePreview = document.getElementById('image-preview');
-    const placeholder = document.querySelector('.placeholder');
-    const promptSection = document.getElementById('prompt-section');
-    const forwardButton = document.getElementById('forward-button');
-    const buttonBar = document.getElementById('button-bar');
+    const previewImage = document.getElementById('previewImage');
+    const placeholderText = document.getElementById('placeholderText');
+    const promptArea = document.getElementById('promptArea');
 
-    imageInput.addEventListener('change', e => {
-      const file = e.target.files[0];
-      if (file) {
-        const url = URL.createObjectURL(file);
-        imagePreview.src = url;
-        imagePreview.style.display = 'block';
-        placeholder.style.display = 'none';
-      }
+    const galleryInput = document.getElementById('galleryInput');
+    const cameraInput = document.getElementById('cameraInput');
+    const cameraButton = document.getElementById('cameraButton');
+    const forwardButton = document.getElementById('forwardButton');
+
+    const projectName = document.getElementById('projectName');
+    const editProjectBtn = document.getElementById('editProjectBtn');
+    const projectInput = document.getElementById('projectInput');
+
+    function handleImage(file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        previewImage.src = e.target.result;
+        previewImage.style.display = 'block';
+        placeholderText.style.display = 'none';
+        forwardButton.style.display = 'inline-block';
+      };
+      reader.readAsDataURL(file);
+    }
+
+    galleryInput.addEventListener('change', (e) => {
+      if (e.target.files.length > 0) handleImage(e.target.files[0]);
+    });
+
+    cameraInput.addEventListener('change', (e) => {
+      if (e.target.files.length > 0) handleImage(e.target.files[0]);
+    });
+
+    cameraButton.addEventListener('click', () => {
+      cameraInput.click();
     });
 
     forwardButton.addEventListener('click', () => {
-      promptSection.style.display = 'flex';
-      buttonBar.style.display = 'none';
+      promptArea.style.display = 'block';
+    });
+
+    editProjectBtn.addEventListener('click', () => {
+      projectInput.value = projectName.textContent;
+      projectName.style.display = 'none';
+      editProjectBtn.style.display = 'none';
+      projectInput.style.display = 'inline-block';
+      projectInput.focus();
+    });
+
+    projectInput.addEventListener('blur', () => {
+      if (projectInput.value.trim() !== '') {
+        projectName.textContent = projectInput.value.trim();
+      }
+      projectName.style.display = 'inline-block';
+      editProjectBtn.style.display = 'inline-block';
+      projectInput.style.display = 'none';
     });
   </script>
 </body>
