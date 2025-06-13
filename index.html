@@ -32,85 +32,30 @@
 
     <!-- Footer Buttons -->
     <div class="footer">
-      <!-- Gallery Button -->
-      <label for="galleryInput">
+      <!-- Gallery (left button) -->
+      <label for="fileInputGallery">
         <img src="assets/GalleryIcon.png" alt="Gallery Icon" class="footer-button" />
       </label>
-      <input type="file" id="galleryInput" accept="image/*" style="display:none;" />
+      <input type="file" id="fileInputGallery" accept="image/*" style="display:none;" />
 
-      <!-- Camera Button -->
-      <button class="middle-dot" id="cameraButton"></button>
-      <input type="file" id="cameraInput" accept="image/*" capture="environment" style="display:none;" />
+      <!-- Middle Dot (camera) -->
+      <label for="fileInputCamera">
+        <div class="middle-dot"></div>
+      </label>
+      <input type="file" id="fileInputCamera" accept="image/*" capture="environment" style="display:none;" />
 
-      <!-- Forward Button -->
+      <!-- Forward -->
       <button id="forwardButton" class="footer-button forward">
         <img src="assets/ForwardButton.png" alt="Forward Icon" />
       </button>
     </div>
 
-    <!-- Prompt Input Area -->
+    <!-- Prompt Input Area (Initially Hidden) -->
     <div class="prompt-area" id="promptArea" style="display:none;">
       <input type="text" id="designPrompt" placeholder="Design Prompt..." />
     </div>
   </div>
 
-  <script>
-    const previewImage = document.getElementById('previewImage');
-    const placeholderText = document.getElementById('placeholderText');
-    const promptArea = document.getElementById('promptArea');
-
-    const galleryInput = document.getElementById('galleryInput');
-    const cameraInput = document.getElementById('cameraInput');
-    const cameraButton = document.getElementById('cameraButton');
-    const forwardButton = document.getElementById('forwardButton');
-
-    const projectName = document.getElementById('projectName');
-    const editProjectBtn = document.getElementById('editProjectBtn');
-    const projectInput = document.getElementById('projectInput');
-
-    function handleImage(file) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        previewImage.src = e.target.result;
-        previewImage.style.display = 'block';
-        placeholderText.style.display = 'none';
-        forwardButton.style.display = 'inline-block';
-      };
-      reader.readAsDataURL(file);
-    }
-
-    galleryInput.addEventListener('change', (e) => {
-      if (e.target.files.length > 0) handleImage(e.target.files[0]);
-    });
-
-    cameraInput.addEventListener('change', (e) => {
-      if (e.target.files.length > 0) handleImage(e.target.files[0]);
-    });
-
-    cameraButton.addEventListener('click', () => {
-      cameraInput.click();
-    });
-
-    forwardButton.addEventListener('click', () => {
-      promptArea.style.display = 'block';
-    });
-
-    editProjectBtn.addEventListener('click', () => {
-      projectInput.value = projectName.textContent;
-      projectName.style.display = 'none';
-      editProjectBtn.style.display = 'none';
-      projectInput.style.display = 'inline-block';
-      projectInput.focus();
-    });
-
-    projectInput.addEventListener('blur', () => {
-      if (projectInput.value.trim() !== '') {
-        projectName.textContent = projectInput.value.trim();
-      }
-      projectName.style.display = 'inline-block';
-      editProjectBtn.style.display = 'inline-block';
-      projectInput.style.display = 'none';
-    });
-  </script>
+  <script src="app.js"></script>
 </body>
 </html>
