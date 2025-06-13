@@ -1,34 +1,39 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>forMat UI</title>
-  <link rel="stylesheet" href="style.css" />
+  <meta charset="UTF-8">
+  <title>forMat</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="container">
-    <header class="header">
-      <img src="assets/FormatLogo.png" alt="forMat Logo" class="formatlogo" />
-      <img src="assets/Login.png" alt="Login Icon" class="login" />
-    </header>
+  <div class="ipad-frame">
+    <div class="header">
+      <img src="assets/FormatLogo.png" alt="forMat Logo" class="formatlogo">
+      <img src="assets/Login.png" alt="Login Icon" class="login">
+    </div>
 
     <div class="divider top-line"></div>
 
-    <div class="canvas">
+    <div class="canvas-area">
       <div class="canvas-header">
-        <span>Capture</span>
-        <span>Project 4 XYZ... ✎</span>
+        <span class="canvas-label">Capture</span>
+        <span class="project-name">Project 4 XYZ... ✎</span>
       </div>
 
-      <div class="button-group">
-        <button class="circle-btn"></button>
-        <a href="camera.html" class="circle-btn black"></a>
-        <button class="circle-btn"></button>
+      <div class="canvas">
+        <button class="action-button gallery-button" onclick="openGallery()">🖼️</button>
+        <a href="camera.html" class="camera-button"></a>
+        <button class="action-button next-button">→</button>
       </div>
     </div>
 
     <div class="divider bottom-line"></div>
   </div>
+
+  <script>
+    function openGallery() {
+      alert("Gallery clicked – implement file picker or viewer.");
+    }
+  </script>
 </body>
 </html>
