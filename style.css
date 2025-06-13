@@ -1,179 +1,137 @@
-* {
-  box-sizing: border-box;
-  font-family: 'PT Mono', monospace;
-  margin: 0;
-  padding: 0;
-}
-
 body {
-  background-color: #111;
+  background: #111;
+  margin: 0;
+  font-family: 'PT Mono', monospace;
   display: flex;
   justify-content: center;
   align-items: center;
   height: 100vh;
 }
 
-.container {
+.canvas {
   width: 1024px;
   height: 1366px;
-  background-color: #fff;
+  background: white;
   border-radius: 10px;
-  padding: 20px;
-  position: relative;
-}
-
-/* Header */
-.header {
+  overflow: hidden;
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  flex-direction: column;
+  box-shadow: 0 0 10px rgba(0,0,0,0.4);
 }
 
-.logo {
-  width: 150px;
-  height: auto;
-}
-
-.login-icon {
-  width: 40px;
-  height: 40px;
-  object-fit: contain;
-}
-
-/* Top Bar */
 .top-bar {
   display: flex;
   justify-content: space-between;
-  padding: 6px 0;
+  padding: 20px;
+  height: 60px;
+}
+
+.logo {
+  height: 30px;
+}
+
+.user-icon {
+  height: 30px;
+}
+
+.tabs {
+  display: flex;
+  justify-content: space-between;
+  padding: 5px 20px;
   font-size: 12px;
-  border-top: 1px solid #000;
-  border-bottom: 1px solid #000;
-  margin-top: 10px;
+  border-top: 1px solid black;
+  border-bottom: 1px solid black;
 }
 
-.left-label {
-  margin-left: 10px;
-}
-
-.right-label {
-  margin-right: 10px;
-}
-
-.edit-pen {
-  margin-left: 5px;
-}
-
-/* Canvas */
-.canvas {
-  background-color: #ddd;
-  margin-top: 10px;
-  height: 1000px;
+.viewer {
+  flex: 1;
+  background: #ddd;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   position: relative;
   overflow: hidden;
 }
 
-.corner {
-  width: 25px;
-  height: 25px;
-  border: 3px solid black;
-  position: absolute;
+.placeholder-text {
+  color: #999;
 }
 
-.top-left {
-  top: 0;
-  left: 0;
-  border-right: none;
-  border-bottom: none;
-}
-
-.top-right {
-  top: 0;
-  right: 0;
-  border-left: none;
-  border-bottom: none;
-}
-
-.bottom-left {
-  bottom: 0;
-  left: 0;
-  border-right: none;
-  border-top: none;
-}
-
-.bottom-right {
-  bottom: 0;
-  right: 0;
-  border-left: none;
-  border-top: none;
-}
-
-.uploaded-image {
+.preview {
   max-width: 100%;
   max-height: 100%;
   object-fit: contain;
-  position: absolute;
-  top: 0;
-  left: 0;
-  display: none;
 }
 
-/* Footer Buttons */
-.footer {
+.controls {
   display: flex;
-  justify-content: space-around;
+  justify-content: space-between;
   align-items: center;
-  margin-top: 10px;
+  padding: 12px 24px;
+  border-top: 1px solid black;
+  height: 70px;
 }
 
-.circle-button {
-  width: 40px;
-  height: 40px;
-  border: 1px solid #000;
+.icon-button {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+.icon-button img {
+  height: 32px;
+  width: 32px;
+  border: 1px solid black;
   border-radius: 50%;
-  background-color: #fff;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  padding: 4px;
+  background: white;
 }
 
-.circle-button img {
-  width: 20px;
-  height: 20px;
+.camera-button {
+  width: 24px;
+  height: 24px;
+  background: black;
+  border-radius: 50%;
 }
 
-.center-button {
-  background-color: #000;
-}
-
-/* Prompt Section (Keyboard) */
-.prompt-section {
-  margin-top: 20px;
-}
-
-.prompt-input {
-  width: 100%;
-  padding: 10px;
-  margin-top: 20px;
-  font-size: 16px;
-}
-
-.keyboard-mockup {
-  margin-top: 20px;
-  background-color: #ddd;
+.prompt-area {
   padding: 20px;
-  border-radius: 6px;
+  background: #eee;
+  border-top: 1px solid #aaa;
 }
 
-.keys-row {
-  margin-bottom: 10px;
-  text-align: center;
-  font-size: 16px;
-}
-
-.keys-row.bottom {
-  font-weight: bold;
-}
-
-.hidden {
+.prompt-area.hidden {
   display: none;
+}
+
+.prompt-area input {
+  width: 100%;
+  font-size: 16px;
+  padding: 10px;
+  font-family: 'PT Mono', monospace;
+  margin-bottom: 10px;
+}
+
+.keyboard {
+  background: #ccc;
+  padding: 10px;
+  border-radius: 8px;
+}
+
+.suggestions {
+  font-size: 12px;
+  margin-bottom: 8px;
+}
+
+.keys {
+  font-size: 18px;
+  line-height: 1.8;
+  text-align: center;
+}
+
+.bottom-row {
+  text-align: center;
+  font-size: 14px;
+  margin-top: 10px;
 }

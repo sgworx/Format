@@ -6,34 +6,64 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="ipad-frame">
-    <div class="header">
-      <img src="assets/FormatLogo.png" alt="forMat Logo" class="formatlogo">
-      <img src="assets/Login.png" alt="Login Icon" class="login">
+  <div class="canvas">
+    <div class="top-bar">
+      <img src="assets/FormatLogo.png" class="logo" alt="forMat Logo">
+      <img src="assets/Login.png" class="user-icon" alt="User">
+    </div>
+    
+    <div class="tabs">
+      <span>Capture</span>
+      <span class="project-label">Project 4 XYZ...</span>
+    </div>
+    
+    <div class="viewer" id="image-area">
+      <p class="placeholder-text">Tap gallery or camera to begin</p>
     </div>
 
-    <div class="divider top-line"></div>
+    <div class="controls">
+      <label class="icon-button">
+        <input type="file" accept="image/*" id="galleryInput" hidden>
+        <img src="assets/GalleryIcon.png" alt="Gallery">
+      </label>
 
-    <div class="canvas-area">
-      <div class="canvas-header">
-        <span class="canvas-label">Capture</span>
-        <span class="project-name">Project 4 XYZ... ✎</span>
-      </div>
+      <div class="camera-button"></div>
 
-      <div class="canvas">
-        <button class="action-button gallery-button" onclick="openGallery()">🖼️</button>
-        <a href="camera.html" class="camera-button"></a>
-        <button class="action-button next-button">→</button>
-      </div>
+      <button class="icon-button" id="forwardButton">
+        <img src="assets/ForwardButton.png" alt="Forward">
+      </button>
     </div>
 
-    <div class="divider bottom-line"></div>
+    <div class="prompt-area hidden" id="promptArea">
+      <input type="text" placeholder="Design Prompt..." id="promptInput">
+      <div class="keyboard">
+        <div class="suggestions">Suggest&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Suggest&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Suggest</div>
+        <div class="keys">QWERTYUIOP<br>ASDFGHJKL<br>ZXCVBNM</div>
+        <div class="bottom-row">123 &nbsp;&nbsp; space &nbsp;&nbsp; Go</div>
+      </div>
+    </div>
   </div>
 
   <script>
-    function openGallery() {
-      alert("Gallery clicked – implement file picker or viewer.");
-    }
+    const galleryInput = document.getElementById('galleryInput');
+    const imageArea = document.getElementById('image-area');
+    const forwardButton = document.getElementById('forwardButton');
+    const promptArea = document.getElementById('promptArea');
+
+    galleryInput.addEventListener('change', e => {
+      const file = e.target.files[0];
+      if (file) {
+        const img = document.createElement('img');
+        img.src = URL.createObjectURL(file);
+        img.className = 'preview';
+        imageArea.innerHTML = '';
+        imageArea.appendChild(img);
+      }
+    });
+
+    forwardButton.addEventListener('click', () => {
+      promptArea.classList.remove('hidden');
+    });
   </script>
 </body>
 </html>
