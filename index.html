@@ -11,40 +11,50 @@
     <!-- Header -->
     <div class="header">
       <img src="assets/FormatLogo.png" alt="forMat Logo" class="logo" />
-      <div class="project-name">
-        <span id="projectName">Project 4 XYZ...</span>
-        <button id="editProjectBtn">✎</button>
-        <input type="text" id="projectInput" style="display:none;" />
-      </div>
       <img src="assets/Login.png" alt="User Icon" class="user-icon" />
     </div>
 
-    <!-- Divider -->
+    <!-- Capture bar with project editor moved here -->
     <div class="divider">
       <span>Capture</span>
+      <div class="project-name">
+        <span id="projectName">Project 4 XYZ…</span>
+        <button id="editProjectBtn">✎</button>
+        <input type="text" id="projectInput" style="display:none;" />
+      </div>
     </div>
 
     <!-- Image Canvas Area -->
     <div id="canvasArea" class="canvas">
-      <p id="placeholderText">Tap gallery or camera to begin</p>
-      <img id="previewImage" src="" alt="" style="display:none;" />
-    </div>
+  <p id="placeholderText">Tap gallery or camera to begin</p>
+  <img id="previewImage" src="" alt="" style="display:none;" />
+
+  <!-- corner guides -->
+  <div class="corner top-left"></div>
+  <div class="corner top-right"></div>
+  <div class="corner bottom-left"></div>
+  <div class="corner bottom-right"></div>
+</div>
 
     <!-- Footer Buttons -->
     <div class="footer">
-      <!-- Gallery (left button) -->
+      <!-- Gallery (left) -->
       <label for="fileInputGallery">
         <img src="assets/GalleryIcon.png" alt="Gallery Icon" class="footer-button" />
       </label>
       <input type="file" id="fileInputGallery" accept="image/*" style="display:none;" />
 
-      <!-- Middle Dot (camera) -->
+      <!-- Camera (middle) -->
       <label for="fileInputCamera">
         <div class="middle-dot"></div>
       </label>
-      <input type="file" id="fileInputCamera" accept="image/*" capture="environment" style="display:none;" />
+      <input type="file"
+             id="fileInputCamera"
+             accept="image/*"
+             capture="environment"
+             style="display:none;" />
 
-      <!-- Forward -->
+      <!-- Forward (right) -->
       <button id="forwardButton" class="footer-button forward">
         <img src="assets/ForwardButton.png" alt="Forward Icon" />
       </button>
