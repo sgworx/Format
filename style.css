@@ -1,3 +1,6 @@
+/* =====================================
+   Base Styles
+   ===================================== */
 body {
   margin: 0;
   padding: 0;
@@ -17,38 +20,39 @@ body {
   max-width: 820px;
   max-height: 1180px;
   box-sizing: border-box;
-   padding: 20px;
+  padding: 20px;
 }
 
-/* Header */
+/* =====================================
+   Header
+   ===================================== */
 .header {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  padding: 1px 0px 8px;
+  padding: 1px 0 8px;
   background: #fff;
-
 }
 
 .logo {
   height: 34px;
-  
 }
 
 .user-icon {
   height: 34px;
 }
 
-/* Capture bar + project editor */
+/* =====================================
+   Capture Bar + Project Editor
+   ===================================== */
 .divider {
   display: flex;
   justify-content: space-between;
   align-items: center;
   font-size: 14px;
   color: #111;
-  border-top: 1px solid black;   /* only top line here */
-  padding: 5px 1px ;
-  
+  border-top: 1px solid black;
+  padding: 5px 1px;
 }
 
 .project-name {
@@ -57,105 +61,50 @@ body {
   gap: 4px;
   font-size: 14px;
   color: #222;
-  
 }
 
 .project-name input {
   font-family: 'PT Mono', monospace;
   font-size: 14px;
-  padding: 0px 0px;
-
+  padding: 0;
 }
 
-/* Canvas */
+/* =====================================
+   Canvas Area
+   ===================================== */
 .canvas {
+  position: relative;
   background: #ddd;
   flex-grow: 1;
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  height: 100%;
-  
+  overflow: hidden;
 }
 
 #placeholderText {
   font-size: 9px;
   color: #888;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 
 #previewImage {
-  max-width: 100%;
-  max-height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
   object-fit: contain;
 }
 
-/* Footer */
-.footer {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background: white;
-  padding: 15px 0px 3px;
-  border-top: 1px solid black;
-   margin-top: 20px;
-}
-
-.footer-button {
-  width: 28px;
-  height: 28px;
-  background: transparent;
-  border: 1px solid #000;
-  border-radius: 50%;
-  padding: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-}
-/* Make the inner icon a bit smaller so it sits nicely inside */
-.footer-button img {
-  width: 16px;
-  height: 16px;
-  display: block;
-}
-.footer-button.forward img {
-  display: block;
-  width: 32px;
-  height: 32px;
-}
-.middle-dot {
-  width: 28px;
-  height: 28px;
-  background: black;
-  border-radius: 50%;
-  cursor: pointer;
-}
-
-/* Prompt Input */
-.prompt-area {
-  background: white;
-  border-top: 1px solid black;
-  padding: 10px 20px;
-}
-
-.prompt-area input {
-  width: 100%;
-  padding: 10px;
-  font-family: 'PT Mono', monospace;
-  font-size: 12px;
-  border: 1px solid black;
-}
-
-/* -----------------------------------
-   little L-shaped corner guides
-   ----------------------------------- */
+/* =====================================
+   Little L-shaped Corner Guides
+   ===================================== */
 .corner {
   position: absolute;
   width: 40px;
   height: 40px;
-  pointer-events: none; /* clicks pass through */
+  pointer-events: none;
 }
 
 .corner::before,
@@ -165,12 +114,10 @@ body {
   background: #000;
 }
 
-/* top-left */
+/* Top-left */
 .top-left {
-  top: 0;
-  left: 0;
-  bottom: 40px;
-  right: 40px;
+  top: 20px;
+  left: 20px;
 }
 .top-left::before {
   width: 2px;
@@ -185,10 +132,10 @@ body {
   top: 0;
 }
 
-/* top-right */
+/* Top-right */
 .top-right {
-  top: 0;
-  right: 0;
+  top: 20px;
+  right: 20px;
 }
 .top-right::before {
   width: 2px;
@@ -203,10 +150,10 @@ body {
   top: 0;
 }
 
-/* bottom-left */
+/* Bottom-left */
 .bottom-left {
-  bottom: 0;
-  left: 0;
+  bottom: 20px;
+  left: 20px;
 }
 .bottom-left::before {
   width: 40px;
@@ -221,10 +168,10 @@ body {
   bottom: 0;
 }
 
-/* bottom-right */
+/* Bottom-right */
 .bottom-right {
-  bottom: 0;
-  right: 0;
+  bottom: 20px;
+  right: 20px;
 }
 .bottom-right::before {
   width: 40px;
@@ -239,19 +186,100 @@ body {
   bottom: 0;
 }
 
-.top-left {
-  top: 20px;
-  left: 20px;
+/* =====================================
+   Footer Controls (Gallery / Camera / Forward)
+   ===================================== */
+.footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: white;
+  padding: 15px 0 3px;
+  border-top: 1px solid black;
+  margin-top: 20px;
 }
-.top-right {
-  top: 20px;
-  right: 20px;
+
+.footer-button {
+  width: 28px;
+  height: 28px;
+  background: transparent;
+  border: 1px solid #000;
+  border-radius: 50%;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
 }
-.bottom-left {
-  bottom: 20px;
-  left: 20px;
+
+.footer-button img {
+  width: 16px;
+  height: 16px;
+  display: block;
 }
-.bottom-right {
-  bottom: 20px;
-  right: 20px;
+
+/* the black camera “dot” */
+.middle-dot {
+  width: 28px;
+  height: 28px;
+  background: black;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+/* =====================================
+   Prompt Input Area (hidden until forward)
+   ===================================== */
+.prompt-area {
+  display: none;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 8px 20px;
+  background: #fff;
+  border-top: 1px solid #000;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.prompt-area input {
+  flex: 1;
+  padding: 10px;
+  font-family: 'PT Mono', monospace;
+  font-size: 12px;
+  border: 1px solid #000;
+}
+
+.prompt-area .prompt-forward {
+  width: 32px;
+  height: 32px;
+  background: #fff;
+  border: 1px solid #000;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.prompt-area .prompt-forward img {
+  width: 16px;
+  height: 16px;
+}
+
+/* =====================================
+   Prompt Mode (reserve space for keyboard)
+   ===================================== */
+.container.prompt-mode {
+  padding-bottom: 260px; /* room for iPad keyboard */
+}
+
+.container.prompt-mode .canvas,
+.container.prompt-mode .footer {
+  display: none;
+}
+
+/* keep the corner guides visible even in prompt-mode */
+.container.prompt-mode .corner {
+  display: block;
 }
