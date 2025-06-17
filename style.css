@@ -1,4 +1,4 @@
-/* =====================================
+/* ===================================== 
    Base Styles
    ===================================== */
 body {
@@ -98,7 +98,7 @@ body {
 }
 
 /* =====================================
-   Little L-shaped Corner Guides
+   Corner Guides
    ===================================== */
 .corner {
   position: absolute;
@@ -106,7 +106,6 @@ body {
   height: 40px;
   pointer-events: none;
 }
-
 .corner::before,
 .corner::after {
   content: '';
@@ -114,80 +113,24 @@ body {
   background: #000;
 }
 
-/* Top-left */
-.top-left {
-  top: 20px;
-  left: 20px;
-}
-.top-left::before {
-  width: 2px;
-  height: 40px;
-  left: 0;
-  top: 0;
-}
-.top-left::after {
-  width: 40px;
-  height: 2px;
-  left: 0;
-  top: 0;
-}
+.top-left { top: 20px; left: 20px; }
+.top-left::before { width: 2px; height: 40px; left: 0; top: 0; }
+.top-left::after  { width: 40px; height: 2px; left: 0; top: 0; }
 
-/* Top-right */
-.top-right {
-  top: 20px;
-  right: 20px;
-}
-.top-right::before {
-  width: 2px;
-  height: 40px;
-  right: 0;
-  top: 0;
-}
-.top-right::after {
-  width: 40px;
-  height: 2px;
-  right: 0;
-  top: 0;
-}
+.top-right { top: 20px; right: 20px; }
+.top-right::before { width: 2px; height: 40px; right: 0; top: 0; }
+.top-right::after  { width: 40px; height: 2px; right: 0; top: 0; }
 
-/* Bottom-left */
-.bottom-left {
-  bottom: 20px;
-  left: 20px;
-}
-.bottom-left::before {
-  width: 40px;
-  height: 2px;
-  left: 0;
-  bottom: 0;
-}
-.bottom-left::after {
-  width: 2px;
-  height: 40px;
-  left: 0;
-  bottom: 0;
-}
+.bottom-left { bottom: 20px; left: 20px; }
+.bottom-left::before { width: 40px; height: 2px; left: 0; bottom: 0; }
+.bottom-left::after  { width: 2px; height: 40px; left: 0; bottom: 0; }
 
-/* Bottom-right */
-.bottom-right {
-  bottom: 20px;
-  right: 20px;
-}
-.bottom-right::before {
-  width: 40px;
-  height: 2px;
-  right: 0;
-  bottom: 0;
-}
-.bottom-right::after {
-  width: 2px;
-  height: 40px;
-  right: 0;
-  bottom: 0;
-}
+.bottom-right { bottom: 20px; right: 20px; }
+.bottom-right::before { width: 40px; height: 2px; right: 0; bottom: 0; }
+.bottom-right::after  { width: 2px; height: 40px; right: 0; bottom: 0; }
 
 /* =====================================
-   Footer Controls (Gallery / Camera / Forward)
+   Footer Controls
    ===================================== */
 .footer {
   display: flex;
@@ -205,7 +148,6 @@ body {
   background: transparent;
   border: 1px solid #000;
   border-radius: 50%;
-  padding: 0;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -215,10 +157,8 @@ body {
 .footer-button img {
   width: 16px;
   height: 16px;
-  display: block;
 }
 
-/* the black camera “dot” */
 .middle-dot {
   width: 28px;
   height: 28px;
@@ -268,18 +208,78 @@ body {
 }
 
 /* =====================================
-   Prompt Mode (reserve space for keyboard)
+   Prompt Mode (reserve space for keyboard,
+   hide previewImage & footer)
    ===================================== */
 .container.prompt-mode {
   padding-bottom: 260px; /* room for iPad keyboard */
 }
 
-.container.prompt-mode .canvas,
+.container.prompt-mode #previewImage,
 .container.prompt-mode .footer {
   display: none;
 }
 
-/* keep the corner guides visible even in prompt-mode */
-.container.prompt-mode .corner {
-  display: block;
+/* =====================================
+   Generated Output UI (page 3)
+   ===================================== */
+.output-area {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  background: white;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0 20px 20px;
+  margin-top: 10px;
+}
+
+.output-canvas {
+  width: 100%;
+  padding-top: 100%;    /* 1:1 aspect ratio */
+  position: relative;
+  background: #ddd;
+  overflow: hidden;
+  border: 1px solid #aaa;
+}
+
+.output-canvas img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.output-pagination {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.output-pagination .dot {
+  width: 8px;
+  height: 8px;
+  background: #222;
+  border-radius: 50%;
+  opacity: .3;
+  transition: opacity .2s;
+}
+
+.output-pagination .dot.active {
+  opacity: 1;
+}
+
+/* =====================================
+   Move second border under the generated image
+   ===================================== */
+/* hide original divider’s border-top in prompt/output mode */
+.container.prompt-mode .divider {
+  border-top: none;
+}
+
+/* add a new border above the output-area */
+.container.prompt-mode .output-area {
+  border-top: 1px solid #000;
 }
