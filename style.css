@@ -114,20 +114,20 @@ body {
 }
 
 .top-left { top: 20px; left: 20px; }
-.top-left::before { width: 2px; height: 40px; left: 0; top: 0; }
-.top-left::after  { width: 40px; height: 2px; left: 0; top: 0; }
+.top-left::before { width: 2px;  height: 40px; left: 0;  top: 0; }
+.top-left::after  { width: 40px; height: 2px;  left: 0;  top: 0; }
 
 .top-right { top: 20px; right: 20px; }
-.top-right::before { width: 2px; height: 40px; right: 0; top: 0; }
-.top-right::after  { width: 40px; height: 2px; right: 0; top: 0; }
+.top-right::before { width: 2px;  height: 40px; right: 0; top: 0; }
+.top-right::after  { width: 40px; height: 2px;  right: 0; top: 0; }
 
 .bottom-left { bottom: 20px; left: 20px; }
-.bottom-left::before { width: 40px; height: 2px; left: 0; bottom: 0; }
-.bottom-left::after  { width: 2px; height: 40px; left: 0; bottom: 0; }
+.bottom-left::before { width: 40px; height: 2px;  left: 0;  bottom: 0; }
+.bottom-left::after  { width: 2px;  height: 40px; left: 0;  bottom: 0; }
 
 .bottom-right { bottom: 20px; right: 20px; }
-.bottom-right::before { width: 40px; height: 2px; right: 0; bottom: 0; }
-.bottom-right::after  { width: 2px; height: 40px; right: 0; bottom: 0; }
+.bottom-right::before { width: 40px; height: 2px;  right: 0; bottom: 0; }
+.bottom-right::after  { width: 2px;  height: 40px; right: 0; bottom: 0; }
 
 /* =====================================
    Footer Controls
@@ -209,7 +209,7 @@ body {
 
 /* =====================================
    Prompt Mode (reserve space for keyboard,
-   hide previewImage & footer)
+   hide only previewImage & footer)
    ===================================== */
 .container.prompt-mode {
   padding-bottom: 260px; /* room for iPad keyboard */
@@ -269,17 +269,4 @@ body {
 
 .output-pagination .dot.active {
   opacity: 1;
-}
-
-/* =====================================
-   Move second border under the generated image
-   ===================================== */
-/* hide original divider’s border-top in prompt/output mode */
-.container.prompt-mode .divider {
-  border-top: none;
-}
-
-/* add a new border above the output-area */
-.container.prompt-mode .output-area {
-  border-top: 1px solid #000;
 }

@@ -1,22 +1,25 @@
-// PROJECT EDIT
-document.getElementById('editProjectBtn').addEventListener('click', function () {
+// --- Project Name Editing ---
+document.getElementById('editProjectBtn').addEventListener('click', () => {
   const span = document.getElementById('projectName');
   const input = document.getElementById('projectInput');
-  input.value = span.textContent.replace('...', '');
+  input.value = span.textContent.replace('…', '');
   span.style.display = 'none';
-  this.style.display = 'none';
+  document.getElementById('editProjectBtn').style.display = 'none';
   input.style.display = 'inline';
   input.focus();
 });
-document.getElementById('projectInput').addEventListener('blur', function () {
+
+document.getElementById('projectInput').addEventListener('blur', function() {
   const newName = this.value.trim();
-  if (newName) document.getElementById('projectName').textContent = newName;
+  if (newName) {
+    document.getElementById('projectName').textContent = newName;
+  }
   this.style.display = 'none';
   document.getElementById('projectName').style.display = 'inline';
   document.getElementById('editProjectBtn').style.display = 'inline';
 });
 
-// GALLERY & CAMERA
+// --- Gallery Upload ---
 document.getElementById('fileInputGallery').addEventListener('change', e => {
   const file = e.target.files[0];
   if (!file) return;
@@ -25,6 +28,8 @@ document.getElementById('fileInputGallery').addEventListener('change', e => {
   img.style.display = 'block';
   document.getElementById('placeholderText').style.display = 'none';
 });
+
+// --- Camera Capture ---
 document.getElementById('fileInputCamera').addEventListener('change', e => {
   const file = e.target.files[0];
   if (!file) return;
@@ -34,22 +39,19 @@ document.getElementById('fileInputCamera').addEventListener('change', e => {
   document.getElementById('placeholderText').style.display = 'none';
 });
 
-// FORWARD → SHOW PROMPT
+// --- Step 2: Show Prompt Input (hide gallery/camera) ---
 document.getElementById('forwardButton').addEventListener('click', () => {
+  // hide gallery/camera row
   document.getElementById('mainFooter').style.display = 'none';
-  document.getElementById('promptArea').style.display = 'flex';
-  document.querySelector('.container').classList.add('prompt-mode');
+  // show prompt area
+  const promptArea = document.getElementById('promptArea');
+  promptArea.style.display = 'flex';
+  // reserve room for on‐screen keyboard
+  document.getElementById('container').classList.add('prompt-mode');
 });
 
-// SUBMIT PROMPT → SHOW OUTPUT
+// --- Step 3: Submit Prompt & Reveal Generated Output ---
 document.getElementById('promptForward').addEventListener('click', () => {
-  // grab & echo the user’s prompt
-  const userPrompt = document.getElementById('designPrompt').value.trim();
-  document.getElementById('outputText').textContent = userPrompt;
-
-  // hide prompt UI
-  document.getElementById('promptArea').style.display = 'none';
-
-  // reveal output pane
+  // show the output block
   document.getElementById('outputArea').style.display = 'flex';
 });

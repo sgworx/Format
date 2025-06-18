@@ -7,14 +7,14 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div class="container">
+  <div class="container" id="container">
     <!-- Header -->
     <div class="header">
       <img src="assets/FormatLogo.png" alt="forMat Logo" class="logo" />
       <img src="assets/Login.png" alt="User Icon" class="user-icon" />
     </div>
 
-    <!-- Capture bar with project editor moved here -->
+    <!-- Capture bar + project editor -->
     <div class="divider">
       <span>Capture</span>
       <div class="project-name">
@@ -24,28 +24,28 @@
       </div>
     </div>
 
-    <!-- Image Canvas Area -->
+    <!-- Canvas -->
     <div id="canvasArea" class="canvas">
-  <p id="placeholderText">Tap gallery or camera to begin</p>
-  <img id="previewImage" src="" alt="" style="display:none;" />
+      <p id="placeholderText">Tap gallery or camera to begin</p>
+      <img id="previewImage" src="" alt="" style="display:none;" />
 
-  <!-- corner guides -->
-  <div class="corner top-left"></div>
-  <div class="corner top-right"></div>
-  <div class="corner bottom-left"></div>
-  <div class="corner bottom-right"></div>
-</div>
+      <!-- Corner guides -->
+      <div class="corner top-left"></div>
+      <div class="corner top-right"></div>
+      <div class="corner bottom-left"></div>
+      <div class="corner bottom-right"></div>
+    </div>
 
-    <!-- Footer Buttons -->
-    <div class="footer">
-      <!-- Gallery (left) -->
-      <label for="fileInputGallery">
-        <img src="assets/GalleryIcon.png" alt="Gallery Icon" class="footer-button" />
+    <!-- Footer: gallery / camera / forward -->
+    <div class="footer" id="mainFooter">
+      <!-- Gallery -->
+      <label for="fileInputGallery" class="footer-button">
+        <img src="assets/GalleryIcon.png" alt="Gallery Icon" />
       </label>
       <input type="file" id="fileInputGallery" accept="image/*" style="display:none;" />
 
-      <!-- Camera (middle) -->
-      <label for="fileInputCamera">
+      <!-- Camera -->
+      <label for="fileInputCamera" class="footer-button">
         <div class="middle-dot"></div>
       </label>
       <input type="file"
@@ -54,15 +54,30 @@
              capture="environment"
              style="display:none;" />
 
-      <!-- Forward (right) -->
-      <button id="forwardButton" class="footer-button forward">
+      <!-- Forward to prompt -->
+      <button id="forwardButton" class="footer-button">
         <img src="assets/ForwardButton.png" alt="Forward Icon" />
       </button>
     </div>
 
-    <!-- Prompt Input Area (Initially Hidden) -->
+    <!-- Prompt Input Area (hidden until you click forward) -->
     <div class="prompt-area" id="promptArea" style="display:none;">
       <input type="text" id="designPrompt" placeholder="Design Prompt..." />
+      <button id="promptForward" class="prompt-forward">
+        <img src="assets/ForwardButton.png" alt="Submit Prompt" />
+      </button>
+    </div>
+
+    <!-- Generated Output Area (hidden until you submit prompt) -->
+    <div class="output-area" id="outputArea" style="display:none;">
+      <div class="output-canvas">
+        <img id="outputImage" src="assets/GeneratedOutput.png" alt="Generated Output" />
+      </div>
+      <div class="output-pagination">
+        <span class="dot active"></span>
+        <span class="dot"></span>
+        <span class="dot"></span>
+      </div>
     </div>
   </div>
 
