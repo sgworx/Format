@@ -11,7 +11,7 @@ body {
 .container {
   width: 100vw;
   height: 100vh;
-  margin: 0 auto;
+  margin: auto;
   background: white;
   overflow: hidden;
   display: flex;
@@ -21,6 +21,7 @@ body {
   max-height: 1180px;
   box-sizing: border-box;
   padding: 20px;
+  position: relative;
 }
 
 /* =====================================
@@ -43,7 +44,7 @@ body {
 }
 
 /* =====================================
-   Capture Bar + Project Editor
+   Top Bar (Capture / Prompt Text)
    ===================================== */
 .divider {
   display: flex;
@@ -52,7 +53,7 @@ body {
   font-size: 14px;
   color: #111;
   border-top: 1px solid black;
-  padding: 5px 1px;
+  padding: 5px 12px;
 }
 
 .project-name {
@@ -77,6 +78,7 @@ body {
   background: #ddd;
   flex-grow: 1;
   overflow: hidden;
+  height: 100%;
 }
 
 #placeholderText {
@@ -105,6 +107,7 @@ body {
   width: 40px;
   height: 40px;
   pointer-events: none;
+  z-index: 1;
 }
 .corner::before,
 .corner::after {
@@ -137,9 +140,8 @@ body {
   justify-content: space-between;
   align-items: center;
   background: white;
-  padding: 15px 0 3px;
-  border-top: 1px solid black;
-  margin-top: 20px;
+  padding: 15px 0 12px;
+  margin-top: 0px;
 }
 
 .footer-button {
@@ -168,7 +170,7 @@ body {
 }
 
 /* =====================================
-   Prompt Input Area (hidden until forward)
+   Prompt Input Area
    ===================================== */
 .prompt-area {
   display: none;
@@ -176,7 +178,6 @@ body {
   box-sizing: border-box;
   padding: 8px 20px;
   background: #fff;
-  border-top: 1px solid #000;
   display: flex;
   align-items: center;
   gap: 12px;
@@ -208,11 +209,10 @@ body {
 }
 
 /* =====================================
-   Prompt Mode (reserve space for keyboard,
-   hide only previewImage & footer)
+   Prompt Mode (for iPad Keyboard)
    ===================================== */
 .container.prompt-mode {
-  padding-bottom: 260px; /* room for iPad keyboard */
+  padding-bottom: 260px;
 }
 
 .container.prompt-mode #previewImage,
@@ -221,7 +221,7 @@ body {
 }
 
 /* =====================================
-   Generated Output UI (page 3)
+   Output Area (Page 3)
    ===================================== */
 .output-area {
   display: none;
@@ -230,23 +230,29 @@ body {
   background: white;
   width: 100%;
   box-sizing: border-box;
-  padding: 0 20px 20px;
-  margin-top: 10px;
+  gap: 12px;
+}
+
+.output-header {
+  padding: 0 20px;
+  font-size: 11px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .output-canvas {
   width: 100%;
-  padding-top: 100%;    /* 1:1 aspect ratio */
-  position: relative;
+  aspect-ratio: 1/1;
   background: #ddd;
-  overflow: hidden;
   border: 1px solid #aaa;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .output-canvas img {
-  position: absolute;
-  top: 0;
-  left: 0;
   width: 100%;
   height: 100%;
   object-fit: contain;
@@ -255,7 +261,7 @@ body {
 .output-pagination {
   display: flex;
   gap: 8px;
-  margin-top: 12px;
+  margin-top: 4px;
 }
 
 .output-pagination .dot {
@@ -269,4 +275,40 @@ body {
 
 .output-pagination .dot.active {
   opacity: 1;
+}
+
+/* Navigation arrows for output image */
+.output-nav-left,
+.output-nav-right {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 28px;
+  height: 28px;
+  background: white;
+  border: 1px solid #000;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 2;
+}
+
+.output-nav-left {
+  left: 12px;
+}
+
+.output-nav-right {
+  right: 12px;
+}
+
+/* =====================================
+   Persistent Bottom Line
+   ===================================== */
+.bottom-border {
+  height: 1px;
+  width: 100%;
+  background: black;
+  margin-top: auto;
 }

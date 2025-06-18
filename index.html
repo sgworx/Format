@@ -14,7 +14,7 @@
       <img src="assets/Login.png" alt="User Icon" class="user-icon" />
     </div>
 
-    <!-- Capture bar + project editor -->
+    <!-- Divider -->
     <div class="divider">
       <span>Capture</span>
       <div class="project-name">
@@ -24,54 +24,52 @@
       </div>
     </div>
 
+    <!-- Prompt Display for Output -->
+    <div class="output-prompt" id="outputPrompt" style="display:none;">
+      <span id="outputText">Prompt will appear here</span>
+    </div>
+
     <!-- Canvas -->
     <div id="canvasArea" class="canvas">
       <p id="placeholderText">Tap gallery or camera to begin</p>
-      <img id="previewImage" src="" alt="" style="display:none;" />
-
-      <!-- Corner guides -->
+      <img id="previewImage" src="" style="display: none;" />
       <div class="corner top-left"></div>
       <div class="corner top-right"></div>
       <div class="corner bottom-left"></div>
       <div class="corner bottom-right"></div>
     </div>
 
-    <!-- Footer: gallery / camera / forward -->
+    <!-- Footer -->
     <div class="footer" id="mainFooter">
-      <!-- Gallery -->
       <label for="fileInputGallery" class="footer-button">
-        <img src="assets/GalleryIcon.png" alt="Gallery Icon" />
+        <img src="assets/GalleryIcon.png" />
       </label>
       <input type="file" id="fileInputGallery" accept="image/*" style="display:none;" />
 
-      <!-- Camera -->
       <label for="fileInputCamera" class="footer-button">
         <div class="middle-dot"></div>
       </label>
-      <input type="file"
-             id="fileInputCamera"
-             accept="image/*"
-             capture="environment"
-             style="display:none;" />
+      <input type="file" id="fileInputCamera" accept="image/*" capture="environment" style="display:none;" />
 
-      <!-- Forward to prompt -->
       <button id="forwardButton" class="footer-button">
-        <img src="assets/ForwardButton.png" alt="Forward Icon" />
+        <img src="assets/ForwardButton.png" />
       </button>
     </div>
 
-    <!-- Prompt Input Area (hidden until you click forward) -->
+    <!-- Prompt Input Area -->
     <div class="prompt-area" id="promptArea" style="display:none;">
       <input type="text" id="designPrompt" placeholder="Design Prompt..." />
       <button id="promptForward" class="prompt-forward">
-        <img src="assets/ForwardButton.png" alt="Submit Prompt" />
+        <img src="assets/ForwardButton.png" />
       </button>
     </div>
 
-    <!-- Generated Output Area (hidden until you submit prompt) -->
+    <!-- Output Area -->
     <div class="output-area" id="outputArea" style="display:none;">
       <div class="output-canvas">
         <img id="outputImage" src="assets/GeneratedOutput.png" alt="Generated Output" />
+        <button class="nav-button left" id="prevBtn">&larr;</button>
+        <button class="nav-button right" id="nextBtn">&rarr;</button>
       </div>
       <div class="output-pagination">
         <span class="dot active"></span>
@@ -80,7 +78,7 @@
       </div>
     </div>
   </div>
-
+  <div class="bottom-border"></div>
   <script src="app.js"></script>
 </body>
 </html>
