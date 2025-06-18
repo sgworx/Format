@@ -1,6 +1,3 @@
-/* ===================================== 
-   Base Styles
-   ===================================== */
 body {
   margin: 0;
   padding: 0;
@@ -11,28 +8,22 @@ body {
 .container {
   width: 100vw;
   height: 100vh;
-  margin: auto;
+  margin: 0 auto;
   background: white;
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: flex-start;
   max-width: 820px;
   max-height: 1180px;
   box-sizing: border-box;
   padding: 20px;
-  position: relative;
 }
 
-/* =====================================
-   Header
-   ===================================== */
 .header {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  padding: 1px 0 8px;
-  background: #fff;
 }
 
 .logo {
@@ -43,9 +34,6 @@ body {
   height: 34px;
 }
 
-/* =====================================
-   Top Bar (Capture / Prompt Text)
-   ===================================== */
 .divider {
   display: flex;
   justify-content: space-between;
@@ -70,15 +58,29 @@ body {
   padding: 0;
 }
 
-/* =====================================
-   Canvas Area
-   ===================================== */
+/* Output Prompt */
+.output-prompt {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+  padding: 6px 12px;
+  border-top: 1px solid #000;
+  border-bottom: 1px solid #000;
+}
+
+.output-prompt button {
+  border: 1px solid #000;
+  background: #fff;
+  padding: 2px 10px;
+  cursor: pointer;
+}
+
 .canvas {
   position: relative;
   background: #ddd;
   flex-grow: 1;
   overflow: hidden;
-  height: 100%;
 }
 
 #placeholderText {
@@ -99,15 +101,11 @@ body {
   object-fit: contain;
 }
 
-/* =====================================
-   Corner Guides
-   ===================================== */
 .corner {
   position: absolute;
   width: 40px;
   height: 40px;
   pointer-events: none;
-  z-index: 1;
 }
 .corner::before,
 .corner::after {
@@ -117,31 +115,26 @@ body {
 }
 
 .top-left { top: 20px; left: 20px; }
-.top-left::before { width: 2px;  height: 40px; left: 0;  top: 0; }
-.top-left::after  { width: 40px; height: 2px;  left: 0;  top: 0; }
+.top-left::before { width: 2px; height: 40px; left: 0; top: 0; }
+.top-left::after { width: 40px; height: 2px; left: 0; top: 0; }
 
 .top-right { top: 20px; right: 20px; }
-.top-right::before { width: 2px;  height: 40px; right: 0; top: 0; }
-.top-right::after  { width: 40px; height: 2px;  right: 0; top: 0; }
+.top-right::before { width: 2px; height: 40px; right: 0; top: 0; }
+.top-right::after { width: 40px; height: 2px; right: 0; top: 0; }
 
 .bottom-left { bottom: 20px; left: 20px; }
-.bottom-left::before { width: 40px; height: 2px;  left: 0;  bottom: 0; }
-.bottom-left::after  { width: 2px;  height: 40px; left: 0;  bottom: 0; }
+.bottom-left::before { width: 40px; height: 2px; left: 0; bottom: 0; }
+.bottom-left::after { width: 2px; height: 40px; left: 0; bottom: 0; }
 
 .bottom-right { bottom: 20px; right: 20px; }
-.bottom-right::before { width: 40px; height: 2px;  right: 0; bottom: 0; }
-.bottom-right::after  { width: 2px;  height: 40px; right: 0; bottom: 0; }
+.bottom-right::before { width: 40px; height: 2px; right: 0; bottom: 0; }
+.bottom-right::after { width: 2px; height: 40px; right: 0; bottom: 0; }
 
-/* =====================================
-   Footer Controls
-   ===================================== */
 .footer {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: white;
-  padding: 15px 0 12px;
-  margin-top: 0px;
+  padding: 12px 0;
 }
 
 .footer-button {
@@ -169,15 +162,10 @@ body {
   cursor: pointer;
 }
 
-/* =====================================
-   Prompt Input Area
-   ===================================== */
 .prompt-area {
   display: none;
   width: 100%;
-  box-sizing: border-box;
   padding: 8px 20px;
-  background: #fff;
   display: flex;
   align-items: center;
   gap: 12px;
@@ -191,7 +179,7 @@ body {
   border: 1px solid #000;
 }
 
-.prompt-area .prompt-forward {
+.prompt-forward {
   width: 32px;
   height: 32px;
   background: #fff;
@@ -203,26 +191,11 @@ body {
   cursor: pointer;
 }
 
-.prompt-area .prompt-forward img {
+.prompt-forward img {
   width: 16px;
   height: 16px;
 }
 
-/* =====================================
-   Prompt Mode (for iPad Keyboard)
-   ===================================== */
-.container.prompt-mode {
-  padding-bottom: 260px;
-}
-
-.container.prompt-mode #previewImage,
-.container.prompt-mode .footer {
-  display: none;
-}
-
-/* =====================================
-   Output Area (Page 3)
-   ===================================== */
 .output-area {
   display: none;
   flex-direction: column;
@@ -230,38 +203,55 @@ body {
   background: white;
   width: 100%;
   box-sizing: border-box;
-  gap: 12px;
-}
-
-.output-header {
-  padding: 0 20px;
-  font-size: 11px;
-  width: 100%;
-  box-sizing: border-box;
+  padding: 0 20px 20px;
+  margin-top: 10px;
 }
 
 .output-canvas {
   width: 100%;
-  aspect-ratio: 1/1;
-  background: #ddd;
-  border: 1px solid #aaa;
+  padding-top: 100%; /* maintain square aspect ratio */
   position: relative;
+  background: #ddd;
   overflow: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  border: 1px solid #aaa;
 }
 
 .output-canvas img {
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
   height: 100%;
   object-fit: contain;
+  display: block;
+}
+
+.nav-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: #fff;
+  border: 1px solid #000;
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.nav-btn.left {
+  left: 10px;
+}
+.nav-btn.right {
+  right: 10px;
 }
 
 .output-pagination {
   display: flex;
   gap: 8px;
-  margin-top: 4px;
+  margin-top: 12px;
 }
 
 .output-pagination .dot {
@@ -270,42 +260,12 @@ body {
   background: #222;
   border-radius: 50%;
   opacity: .3;
-  transition: opacity .2s;
 }
 
 .output-pagination .dot.active {
   opacity: 1;
 }
 
-/* Navigation arrows for output image */
-.output-nav-left,
-.output-nav-right {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 28px;
-  height: 28px;
-  background: white;
-  border: 1px solid #000;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  z-index: 2;
-}
-
-.output-nav-left {
-  left: 12px;
-}
-
-.output-nav-right {
-  right: 12px;
-}
-
-/* =====================================
-   Persistent Bottom Line
-   ===================================== */
 .bottom-border {
   height: 1px;
   width: 100%;

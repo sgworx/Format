@@ -1,15 +1,15 @@
-// Editable project name
+// — Project Name Editing —
 document.getElementById('editProjectBtn').addEventListener('click', () => {
-  const span  = document.getElementById('projectName');
+  const span = document.getElementById('projectName');
   const input = document.getElementById('projectInput');
-  input.value = span.textContent.replace('…','');
+  input.value = span.textContent.replace('…', '');
   span.style.display = 'none';
   document.getElementById('editProjectBtn').style.display = 'none';
   input.style.display = 'inline';
   input.focus();
 });
 
-document.getElementById('projectInput').addEventListener('blur', function() {
+document.getElementById('projectInput').addEventListener('blur', function () {
   const newName = this.value.trim();
   if (newName) document.getElementById('projectName').textContent = newName;
   this.style.display = 'none';
@@ -17,7 +17,7 @@ document.getElementById('projectInput').addEventListener('blur', function() {
   document.getElementById('editProjectBtn').style.display = 'inline';
 });
 
-// Load preview image
+// — Gallery Upload & Camera Capture —
 function loadPreview(file) {
   if (!file) return;
   const img = document.getElementById('previewImage');
@@ -25,52 +25,60 @@ function loadPreview(file) {
   img.style.display = 'block';
   document.getElementById('placeholderText').style.display = 'none';
 }
-
 document.getElementById('fileInputGallery').addEventListener('change', e => loadPreview(e.target.files[0]));
 document.getElementById('fileInputCamera').addEventListener('change', e => loadPreview(e.target.files[0]));
 
-// Show prompt input
+// — Show Prompt Input —
 document.getElementById('forwardButton').addEventListener('click', () => {
+  document.querySelectorAll('.footer-button, .middle-dot').forEach(el => el.style.display = 'none');
   document.getElementById('promptArea').style.display = 'flex';
-  document.getElementById('mainFooter').style.display = 'none';
+  document.getElementById('container').classList.add('prompt-mode');
 });
 
-// Show output screen
+// — Submit Prompt and Show Output —
 document.getElementById('promptForward').addEventListener('click', () => {
-  const userPrompt = document.getElementById('designPrompt').value.trim();
-  document.getElementById('outputText').textContent = userPrompt;
+  const prompt = document.getElementById('designPrompt').value.trim();
+  document.getElementById('outputText').textContent = prompt;
+
   document.getElementById('promptArea').style.display = 'none';
   document.getElementById('canvasArea').style.display = 'none';
-  document.getElementById('outputPrompt').style.display = 'block';
+  document.getElementById('mainFooter').style.display = 'none';
+
+  document.getElementById('outputPrompt').style.display = 'flex';
   document.getElementById('outputArea').style.display = 'flex';
+  document.getElementById('topBarText').textContent = 'Output';
 });
 
-// Carousel logic
-const images = [
-  "assets/GeneratedOutput.png",
-  "assets/GeneratedOutput2.png",
-  "assets/GeneratedOutput3.png"
+// — Output Image Swiping Logic —
+const outputImages = [
+  'assets/GeneratedOutput.png',
+  'assets/GeneratedOutput2.png',
+  'assets/GeneratedOutput3.png'
 ];
+let currentIndex = 0;
 
-let current = 0;
-const image = document.getElementById('outputImage');
-const dots = document.querySelectorAll('.dot');
+const outputImg = document.getElementById('outputImage');
+const dots = document.querySelectorAll('.output-pagination .dot');
 
-function showImage(index) {
-  image.src = images[index];
-  dots.forEach((dot, i) => {
-    dot.classList.toggle('active', i === index);
-  });
+function updateOutputView() {
+  outputImg.src = outputImages[currentIndex];
+  dots.forEach((dot, i) => dot.classList.toggle('active', i === currentIndex));
 }
 
-document.getElementById('prevBtn').addEventListener('click', () => {
-  current = (current - 1 + images.length) % images.length;
-  showImage(current);
+document.getElementById('prevOutput').addEventListener('click', () => {
+  currentIndex = (currentIndex - 1 + outputImages.length) % outputImages.length;
+  updateOutputView();
 });
 
-document.getElementById('nextBtn').addEventListener('click', () => {
-  current = (current + 1) % images.length;
-  showImage(current);
+document.getElementById('nextOutput').addEventListener('click', () => {
+  currentIndex = (currentIndex + 1) % outputImages.length;
+  updateOutputView();
 });
 
-showImage(0);
+// Optional: regenerate button does nothing yet
+document.getElementById('regenerateBtn').addEventListener('click', () => {
+  alert('This would regenerate based on the same prompt.');
+});
+
+// Initialize first image
+updateOutputView();
