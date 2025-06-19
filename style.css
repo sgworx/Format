@@ -18,6 +18,7 @@ body {
   max-height: 1180px;
   box-sizing: border-box;
   padding: 20px;
+  position: relative;
 }
 
 .header {
@@ -196,56 +197,170 @@ body {
   height: 16px;
 }
 
+/* Output Area */
 .output-area {
   display: none;
   flex-direction: column;
   align-items: center;
-  background: white;
   width: 100%;
   box-sizing: border-box;
   padding: 0 20px 20px;
-  margin-top: 10px;
+  background: white;
 }
 
 .output-canvas {
   width: 100%;
-  padding-top: 100%; /* maintain square aspect ratio */
+  padding-top: 100%;
   position: relative;
   background: #ddd;
   overflow: hidden;
   border: 1px solid #aaa;
 }
 
-.output-canvas img {
+.output-canvas img#outputImage {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
   object-fit: contain;
-  display: block;
 }
 
+/* Choose Button */
+.choose-button {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100px;
+  height: 100px;
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+  z-index: 100;
+}
+
+.choose-button img {
+  width: 100%;
+  height: 100%;
+  opacity: 0.3;
+  transition: opacity 0.3s ease;
+}
+
+.choose-button:hover img {
+  opacity: 0.5;
+}
+
+/* Next Step Layout */
+.next-step-layout {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: white;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  padding: 0 20px 20px;
+  box-sizing: border-box;
+}
+
+.next-step-header {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 40px;
+  padding-top: 60px;
+}
+
+/* Small preview */
+.small-output-preview {
+  width: 146px;
+  height: 146px;
+  border: 1px solid #aaa;
+  background: #ddd;
+  overflow: hidden;
+  position: relative;
+}
+
+.small-output-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* 3D Output container */
+.threed-output-container {
+  width: 90%;
+  max-width: 500px;
+  aspect-ratio: 1/1;
+  background: #ddd;
+  border: 1px solid #aaa;
+  position: relative;
+  margin: 0 auto;
+}
+
+.cube-icon {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  width: 24px;
+  height: 24px;
+}
+
+/* Navigation buttons */
 .nav-btn {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  background: #fff;
-  border: 1px solid #000;
+  background: white;
+  border: 1px solid black;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
-  width: 28px;
-  height: 28px;
+  cursor: pointer;
+  z-index: 10;
   display: flex;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
+  font-size: 20px;
 }
 
 .nav-btn.left {
-  left: 10px;
+  left: 20px;
 }
+
 .nav-btn.right {
-  right: 10px;
+  right: 20px;
+}
+
+/* Transitions */
+.output-area.minimized {
+  position: absolute;
+  top: 80px;
+  left: 0;
+  right: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.output-area.minimized .output-canvas {
+  width: 146px;
+  height: 146px;
+  padding-top: 0;
+  margin: 0;
+  transition: all 0.3s ease;
+}
+
+/* Hide elements when minimized */
+.output-area.minimized .nav-btn,
+.output-area.minimized .choose-button,
+.output-area.minimized .output-pagination {
+  display: none;
 }
 
 .output-pagination {
@@ -272,3 +387,5 @@ body {
   background: black;
   margin-top: auto;
 }
+
+

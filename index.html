@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>forMat</title>
   <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=PT+Mono&display=swap" rel="stylesheet">
 </head>
 <body>
   <div class="container" id="container">
@@ -69,7 +70,10 @@
     <div class="output-area" id="outputArea" style="display:none;">
       <div class="output-canvas">
         <button class="nav-btn left" id="prevOutput">←</button>
-        <img id="outputImage" src="assets/GeneratedOutput.png" alt="Generated Output" />
+        <img id="outputImage" src="" alt="Generated Output" />
+        <button id="chooseButton" class="choose-button">
+          <img src="assets/ChoseButton.png" alt="Choose Design" />
+        </button>
         <button class="nav-btn right" id="nextOutput">→</button>
       </div>
       <div class="output-pagination">
@@ -78,9 +82,19 @@
         <span class="dot"></span>
       </div>
     </div>
-  </div>
 
-  <div class="bottom-border"></div>
+    <!-- Next Step Layout -->
+    <div class="next-step-layout" id="nextStepLayout" style="display:none;">
+      <div class="next-step-header">
+        <div class="small-output-preview">
+          <img id="selectedOutputPreview" src="" alt="Selected Design" />
+        </div>
+      </div>
+      <div class="threed-output-container">
+        <img src="assets/Dummy.json" alt="3D View" class="cube-icon" />
+      </div>
+    </div>
+  </div>
 
   <script src="app.js"></script>
 </body>
