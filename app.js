@@ -124,6 +124,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const chooseButton = document.getElementById('chooseButton');
   const nextStepLayout = document.getElementById('nextStepLayout');
   const selectedOutputPreview = document.getElementById('selectedOutputPreview');
+  const modelViewer = document.getElementById('modelViewer');
+  const autoRotateToggle = document.getElementById('autoRotateToggle');
 
   if (chooseButton && outputArea && nextStepLayout && selectedOutputPreview && outputImg) {
     chooseButton.addEventListener('click', () => {
@@ -139,6 +141,16 @@ document.addEventListener('DOMContentLoaded', () => {
       // Update the top bar text
       if (topBarText) {
         topBarText.textContent = 'Preview';
+      }
+    });
+  }
+
+  if (autoRotateToggle && modelViewer) {
+    autoRotateToggle.addEventListener('change', () => {
+      if (autoRotateToggle.checked) {
+        modelViewer.setAttribute('auto-rotate', '');
+      } else {
+        modelViewer.removeAttribute('auto-rotate');
       }
     });
   }
