@@ -1,5 +1,7 @@
 // Wait for DOM to be fully loaded
 document.addEventListener('DOMContentLoaded', () => {
+  const logo = document.querySelector('.logo');
+
   // — Project Name Editing —
   const editProjectBtn = document.getElementById('editProjectBtn');
   const projectName = document.getElementById('projectName');
@@ -11,6 +13,45 @@ document.addEventListener('DOMContentLoaded', () => {
   const threedContainer = document.querySelector('.threed-output-container');
   const instructionsPaginationDots = document.querySelectorAll('#instructionsView .dot');
   let originalProjectName = '';
+
+  if (logo) {
+    logo.addEventListener('click', () => {
+      // Show capture view, hide others
+      if (canvasWrapper) canvasWrapper.style.display = 'flex';
+      if (outputArea) outputArea.style.display = 'none';
+      if (nextStepLayout) nextStepLayout.style.display = 'none';
+
+      // Reset top bar
+      if (topBarText) topBarText.textContent = 'Capture';
+      if (backButton) backButton.style.display = 'none';
+      if (projectNameContainer) projectNameContainer.style.display = 'flex';
+      if (finalizeButton) finalizeButton.style.display = 'none';
+      promptAreaTop.style.display = 'none';
+      
+      // Cancel project name editing if active
+      if (projectInput.style.display === 'inline') {
+        projectInput.style.display = 'none';
+        projectName.style.display = 'inline';
+        editProjectBtn.style.display = 'inline';
+      }
+
+      // Reset footer
+      if (footerCaptureControls) footerCaptureControls.style.display = 'flex';
+      if (promptArea) promptArea.style.display = 'none';
+      
+      // Reset canvas
+      if (previewImage) {
+          previewImage.src = '';
+          previewImage.style.display = 'none';
+      }
+      if (placeholderText) placeholderText.style.display = 'block';
+
+      // Reset state variables
+      currentOutputIndex = 0;
+      currentProductIndex = 0;
+      updateOutputView();
+    });
+  }
 
   if (editProjectBtn) {
     editProjectBtn.addEventListener('click', () => {
@@ -85,6 +126,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const canvasWrapper = document.getElementById('canvasWrapper');
   const outputArea = document.getElementById('outputArea');
   const topBarText = document.getElementById('topBarText');
+  const designPrompt = document.getElementById('designPrompt');
 
   if (promptForward) {
     promptForward.addEventListener('click', () => {
@@ -173,8 +215,13 @@ document.addEventListener('DOMContentLoaded', () => {
         finalizeButton.style.display = 'flex';
       }
 
-      // Sync the index and update the product preview
-      currentProductIndex = currentOutputIndex;
+      // Set the chosen image in the preview and make it visible.
+      // This image will now stay the same while navigating the product views.
+      selectedOutputPreview.src = outputImages[currentOutputIndex];
+      selectedOutputPreview.style.visibility = 'visible';
+
+      // Always start the product view at the first item (3D model).
+      currentProductIndex = 0;
       updateProductPreview();
     });
   }
@@ -245,21 +292,13 @@ document.addEventListener('DOMContentLoaded', () => {
             }
           });
         }
-        selectedOutputPreview.style.visibility = 'visible';
         break;
       case 1: // Text Instructions
         threedContainer.innerHTML = `<div class="instructions-content">${document.getElementById('instructions-template').innerHTML}</div>`;
-        selectedOutputPreview.style.visibility = 'hidden';
         break;
       case 2: // Analysis Image
         threedContainer.innerHTML = `<img src="assets/Diagrams.png" alt="Diagrams" id="analysisImage">`;
-        selectedOutputPreview.style.visibility = 'visible';
         break;
-    }
-
-    // Update the image in the small preview (if not hidden)
-    if (selectedOutputPreview.style.visibility === 'visible') {
-      selectedOutputPreview.src = productImages[currentProductIndex];
     }
 
     // Update the pagination dots

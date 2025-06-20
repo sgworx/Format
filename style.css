@@ -35,6 +35,7 @@ body {
 
 .logo {
   height: 34px;
+  cursor: pointer;
 }
 
 .user-icon {
@@ -550,7 +551,7 @@ body {
 
 .toggle-switch-container {
   position: absolute;
-  top: 20px;
+  top: 10px;
   right: 20px;
   z-index: 10;
   justify-content: center;
