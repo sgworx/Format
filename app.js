@@ -4,6 +4,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const editProjectBtn = document.getElementById('editProjectBtn');
   const projectName = document.getElementById('projectName');
   const projectInput = document.getElementById('projectInput');
+  const projectNameContainer = document.querySelector('.project-name');
+  const finalizeButton = document.getElementById('finalizeButton');
   let originalProjectName = '';
 
   if (editProjectBtn) {
@@ -13,6 +15,12 @@ document.addEventListener('DOMContentLoaded', () => {
       editProjectBtn.style.display = 'none';
       projectInput.style.display = 'inline';
       projectInput.focus();
+      if (projectNameContainer) {
+        projectNameContainer.style.display = 'none';
+      }
+      if (finalizeButton) {
+        finalizeButton.style.display = 'flex';
+      }
     });
   }
 
@@ -23,6 +31,12 @@ document.addEventListener('DOMContentLoaded', () => {
       this.style.display = 'none';
       projectName.style.display = 'inline';
       editProjectBtn.style.display = 'inline';
+      if (projectNameContainer) {
+        projectNameContainer.style.display = 'flex';
+      }
+      if (finalizeButton) {
+        finalizeButton.style.display = 'none';
+      }
     });
   }
 
@@ -143,15 +157,16 @@ document.addEventListener('DOMContentLoaded', () => {
       
       // Update the top bar text and show the back button
       if (topBarText) {
-        topBarText.textContent = 'Stool';
+        topBarText.textContent = 'Project 4 Stool';
       }
       if (backButton) {
         backButton.style.display = 'flex';
       }
-      if (projectName && editProjectBtn) {
-        originalProjectName = projectName.textContent;
-        projectName.textContent = 'Project 4';
-        editProjectBtn.style.display = 'none';
+      if (projectNameContainer) {
+        projectNameContainer.style.display = 'none';
+      }
+      if (finalizeButton) {
+        finalizeButton.style.display = 'flex';
       }
 
       // Sync the index and update the product preview
@@ -170,9 +185,11 @@ document.addEventListener('DOMContentLoaded', () => {
       if (backButton) {
         backButton.style.display = 'none';
       }
-      if (projectName && editProjectBtn) {
-        projectName.textContent = originalProjectName;
-        editProjectBtn.style.display = 'inline';
+      if (projectNameContainer) {
+        projectNameContainer.style.display = 'flex';
+      }
+      if (finalizeButton) {
+        finalizeButton.style.display = 'none';
       }
     });
   }
@@ -227,6 +244,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     designPromptInput.addEventListener('blur', () => {
       container.classList.remove('keyboard-active');
+    });
+  }
+
+  if (finalizeButton) {
+    finalizeButton.addEventListener('click', () => {
+      console.log('Finalize button clicked. Go to next step.');
+      // Next step logic will go here
     });
   }
 });
