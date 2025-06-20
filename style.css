@@ -51,6 +51,12 @@ body {
   padding: 5px 12px;
 }
 
+.top-bar-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
 .top-bar-left-content {
   display: flex;
   align-items: center;
@@ -155,7 +161,7 @@ body {
 .bottom-right::after { width: 2px; height: 40px; right: 0; bottom: 0; }
 
 .footer {
-  /* No special styling needed, it's just a container */
+  margin-top: auto;
 }
 
 #footerCaptureControls {
@@ -240,7 +246,6 @@ body {
 .output-area {
   display: none;
   flex-direction: column;
-  flex-grow: 1;
   align-items: center;
   width: 100%;
   box-sizing: border-box;
@@ -303,13 +308,29 @@ body {
   width: 100%;
   display: flex;
   justify-content: flex-start;
-  margin-bottom: 20px;
+  align-items: center;
+  margin-bottom: auto;
+}
+
+.back-button {
+  background: none;
+  border: 1px solid black;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  font-size: 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 /* Small preview */
 .small-output-preview {
-  width: 80px;
-  height: 80px;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1 / 1;
+  max-width: 220px;
   border: none;
   background: transparent;
   overflow: hidden;
@@ -330,7 +351,7 @@ body {
   background: #ddd;
   border: 1px solid #aaa;
   position: relative;
-  margin: 20px auto;
+  margin: 0 auto;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -512,6 +533,8 @@ body {
   top: 20px;
   right: 20px;
   z-index: 10;
+  justify-content: center;
+  padding-bottom: 20px;
 }
 
 .switch {
@@ -571,5 +594,10 @@ input:checked + .slider:before {
   position: absolute;
   top: 0;
   left: 0;
+}
+
+#nextStepLayout .output-pagination .dot {
+  width: 12px;
+  height: 12px;
 }
 

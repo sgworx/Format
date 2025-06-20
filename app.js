@@ -4,6 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const editProjectBtn = document.getElementById('editProjectBtn');
   const projectName = document.getElementById('projectName');
   const projectInput = document.getElementById('projectInput');
+  let originalProjectName = '';
 
   if (editProjectBtn) {
     editProjectBtn.addEventListener('click', () => {
@@ -51,9 +52,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const forwardButton = document.getElementById('forwardButton');
   const promptArea = document.getElementById('promptArea');
   const footerCaptureControls = document.getElementById('footerCaptureControls');
-  const footerDivider = document.querySelector('.footer-divider');
 
-  if (forwardButton && promptArea && footerCaptureControls && footerDivider) {
+  if (forwardButton && promptArea && footerCaptureControls) {
     forwardButton.addEventListener('click', () => {
       footerCaptureControls.style.display = 'none';
       promptArea.style.display = 'flex';
@@ -91,15 +91,18 @@ document.addEventListener('DOMContentLoaded', () => {
     'assets/ComfyUI_00259_.png',
     'assets/ComfyUI_00258_.png'
   ];
-  let currentIndex = 0;
+  const productImages = [...outputImages, outputImages[0]]; // 4 images for the product view
+
+  let currentOutputIndex = 0;
+  let currentProductIndex = 0;
 
   const outputImg = document.getElementById('outputImage');
-  const dots = document.querySelectorAll('.output-pagination .dot');
+  const dots = document.querySelectorAll('#outputArea .dot');
 
   function updateOutputView() {
-    if (outputImg && outputImages[currentIndex]) {
-      outputImg.src = outputImages[currentIndex];
-      dots.forEach((dot, i) => dot.classList.toggle('active', i === currentIndex));
+    if (outputImg && outputImages[currentOutputIndex]) {
+      outputImg.src = outputImages[currentOutputIndex];
+      dots.forEach((dot, i) => dot.classList.toggle('active', i === currentOutputIndex));
     }
   }
 
@@ -108,14 +111,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
   if (prevOutput) {
     prevOutput.addEventListener('click', () => {
-      currentIndex = (currentIndex - 1 + outputImages.length) % outputImages.length;
+      currentOutputIndex = (currentOutputIndex - 1 + outputImages.length) % outputImages.length;
       updateOutputView();
     });
   }
 
   if (nextOutput) {
     nextOutput.addEventListener('click', () => {
-      currentIndex = (currentIndex + 1) % outputImages.length;
+      currentOutputIndex = (currentOutputIndex + 1) % outputImages.length;
       updateOutputView();
     });
   }
@@ -127,21 +130,49 @@ document.addEventListener('DOMContentLoaded', () => {
   const modelViewer = document.getElementById('modelViewer');
   const autoRotateToggle = document.getElementById('autoRotateToggle');
   const analysisImage = document.getElementById('analysisImage');
+  const backButton = document.getElementById('backButton');
+  const productPaginationDots = document.querySelectorAll('#nextStepLayout .dot');
 
   if (chooseButton && outputArea && nextStepLayout && selectedOutputPreview && outputImg) {
     chooseButton.addEventListener('click', () => {
-      // Copy the current output image to the small preview
-      selectedOutputPreview.src = outputImg.src;
-      
       // Hide the main output area
       outputArea.style.display = 'none';
       
       // Show the next step layout
       nextStepLayout.style.display = 'flex';
       
-      // Update the top bar text
+      // Update the top bar text and show the back button
       if (topBarText) {
-        topBarText.textContent = 'Preview';
+        topBarText.textContent = 'Stool';
+      }
+      if (backButton) {
+        backButton.style.display = 'flex';
+      }
+      if (projectName && editProjectBtn) {
+        originalProjectName = projectName.textContent;
+        projectName.textContent = 'Project 4';
+        editProjectBtn.style.display = 'none';
+      }
+
+      // Sync the index and update the product preview
+      currentProductIndex = currentOutputIndex;
+      updateProductPreview();
+    });
+  }
+
+  if (backButton) {
+    backButton.addEventListener('click', () => {
+      nextStepLayout.style.display = 'none';
+      outputArea.style.display = 'flex';
+      if (topBarText) {
+        topBarText.textContent = 'Output';
+      }
+      if (backButton) {
+        backButton.style.display = 'none';
+      }
+      if (projectName && editProjectBtn) {
+        projectName.textContent = originalProjectName;
+        editProjectBtn.style.display = 'inline';
       }
     });
   }
@@ -165,6 +196,22 @@ document.addEventListener('DOMContentLoaded', () => {
       analysisImage.style.display = 'none';
     }
   }
+
+  function updateProductPreview() {
+    if (selectedOutputPreview) {
+      selectedOutputPreview.src = productImages[currentProductIndex];
+    }
+    productPaginationDots.forEach((dot, index) => {
+        dot.classList.toggle('active', index === currentProductIndex);
+    });
+  }
+
+  productPaginationDots.forEach((dot, index) => {
+    dot.addEventListener('click', () => {
+        currentProductIndex = index;
+        updateProductPreview();
+    });
+  });
 
   // — Initialize view —
   updateOutputView();
