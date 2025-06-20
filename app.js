@@ -190,8 +190,11 @@ document.addEventListener('DOMContentLoaded', () => {
   const modelViewer = document.getElementById('modelViewer');
   const autoRotateToggle = document.getElementById('autoRotateToggle');
   const analysisImage = document.getElementById('analysisImage');
+  const diagramsImage = document.getElementById('diagramsImage');
   const backButton = document.getElementById('backButton');
-  const productPaginationDots = document.querySelectorAll('#nextStepLayout .dot');
+  const productPaginationDots = document.querySelectorAll('#nextStepLayout .output-pagination .dot');
+  const addOutputView = document.getElementById('addOutputView');
+  const toggleSwitchContainer = document.querySelector('.toggle-switch-container');
 
   if (chooseButton && outputArea && nextStepLayout && selectedOutputPreview && outputImg) {
     chooseButton.addEventListener('click', () => {
@@ -243,69 +246,67 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  if (autoRotateToggle && modelViewer && analysisImage) {
-    autoRotateToggle.addEventListener('change', () => {
-      if (autoRotateToggle.checked) {
-        modelViewer.style.display = 'none';
-        analysisImage.style.display = 'block';
-      } else {
-        modelViewer.style.display = 'block';
-        analysisImage.style.display = 'none';
-      }
-    });
-    // Set initial state based on checkbox
-    if (autoRotateToggle.checked) {
-      modelViewer.style.display = 'none';
-      analysisImage.style.display = 'block';
-    } else {
-      modelViewer.style.display = 'block';
-      analysisImage.style.display = 'none';
-    }
-  }
-
   function updateProductPreview() {
-    // Determine what content to show based on the index
-    switch (currentProductIndex) {
-      case 0: // 3D Model
-        threedContainer.innerHTML = `
-          <model-viewer id="modelViewer" src="assets/stool.glb" alt="3D Stool Model" auto-rotate camera-controls></model-viewer>
-          <img src="assets/analysis.png" alt="Analysis" id="analysisImage" style="display: none;">
-          <div class="toggle-switch-container">
-            <label class="switch">
-              <input type="checkbox" id="viewToggle">
-              <span class="slider round"></span>
-            </label>
-          </div>`;
-        
-        const modelViewer = threedContainer.querySelector('#modelViewer');
-        const analysisImage = threedContainer.querySelector('#analysisImage');
-        const viewToggle = threedContainer.querySelector('#viewToggle');
+    // Hide all views first
+    if (threedContainer) threedContainer.style.display = 'none';
+    if (instructionsView) instructionsView.style.display = 'none';
+    if (addOutputView) addOutputView.style.display = 'none';
+    if (modelViewer) modelViewer.style.display = 'none';
+    if (analysisImage) analysisImage.style.display = 'none';
+    if (diagramsImage) diagramsImage.style.display = 'none';
+    if (toggleSwitchContainer) toggleSwitchContainer.style.display = 'none';
+    
+    // Set the correct header thumbnail
+    if (currentProductIndex === 3) {
+      selectedOutputPreview.src = 'assets/ComfyUI_00257_.png'; // Thumbnail for the 4th output
+    } else {
+      selectedOutputPreview.src = 'assets/ComfyUI_00259_.png'; // Default thumbnail for outputs 1-3
+    }
 
-        if (viewToggle && modelViewer && analysisImage) {
-          viewToggle.addEventListener('change', () => {
-            if (viewToggle.checked) {
-              modelViewer.style.display = 'none';
-              analysisImage.style.display = 'block';
-            } else {
-              modelViewer.style.display = 'block';
-              analysisImage.style.display = 'none';
-            }
-          });
+    // Show the correct view based on index
+    switch (currentProductIndex) {
+      case 0: // 3D Model & Analysis Toggle
+        if (threedContainer) threedContainer.style.display = 'flex';
+        if (toggleSwitchContainer) toggleSwitchContainer.style.display = 'block';
+        // Show either model or analysis based on toggle
+        if (autoRotateToggle.checked) {
+          if (modelViewer) modelViewer.style.display = 'block';
+        } else {
+          if (analysisImage) analysisImage.style.display = 'block';
         }
         break;
-      case 1: // Text Instructions
-        threedContainer.innerHTML = `<div class="instructions-content">${document.getElementById('instructions-template').innerHTML}</div>`;
+      case 1: // Instructions
+        if (instructionsView) instructionsView.style.display = 'flex';
         break;
-      case 2: // Analysis Image
-        threedContainer.innerHTML = `<img src="assets/Diagrams.png" alt="Diagrams" id="analysisImage">`;
+      case 2: // Diagrams Image
+        if (threedContainer) threedContainer.style.display = 'flex';
+        if (diagramsImage) diagramsImage.style.display = 'block';
+        break;
+      case 3: // Add Output
+        if (addOutputView) addOutputView.style.display = 'flex';
         break;
     }
-
-    // Update the pagination dots
-    productPaginationDots.forEach((dot, index) => {
-        dot.classList.toggle('active', index === currentProductIndex);
+    
+    // Update dots
+    productPaginationDots.forEach((dot, i) => {
+      dot.classList.toggle('active', i === currentProductIndex);
     });
   }
+
+  // Add event listeners to each product pagination dot
+  productPaginationDots.forEach((dot, index) => {
+    dot.addEventListener('click', () => {
+      currentProductIndex = index;
+      updateProductPreview();
+    });
+  });
+
+  autoRotateToggle.addEventListener('change', () => {
+    // Only update if we are on the first product view
+    if (currentProductIndex === 0) {
+      updateProductPreview();
+    }
+  });
 
   // — Initialize view —
   updateOutputView();

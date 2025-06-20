@@ -72,58 +72,71 @@
       <div class="threed-output-container">
         <model-viewer id="modelViewer" src="assets/stool.glb" alt="3D Stool Model" auto-rotate camera-controls></model-viewer>
         <img src="assets/analysis.png" alt="Analysis" id="analysisImage" style="display: none;">
+        <img src="assets/Diagrams.png" alt="Diagrams" id="diagramsImage" style="display: none;">
         <div class="toggle-switch-container">
           <label class="switch">
-            <input type="checkbox" id="autoRotateToggle">
+            <input type="checkbox" id="autoRotateToggle" checked>
             <span class="slider round"></span>
           </label>
         </div>
       </div>
+
+      <!-- Instructions View (moved inside) -->
+      <div id="instructionsView" class="instructions-view" style="display: none;">
+        <div class="instructions-content">
+          <p>To build this minimalist chair design, follow these step-by-step instructions:</p>
+          <h4>Materials Needed:</h4>
+          <ul>
+            <li>1 flat rectangular wooden plank for the horizontal base (40" x 18" x 1")</li>
+            <li>1 shorter rectangular wooden plank for the backrest (20" x 18" x 1")</li>
+            <li>1 taller rectangular wooden plank for the structural support/shelving (30" x 6" x 1")</li>
+            <li>Wood screws & Wood glue</li>
+            <li>Sandpaper (medium and fine grit)</li>
+            <li>Wood finish (natural) & Drill</li>
+            <li>Saw (if adjustments are needed)</li>
+            <li>Measuring tape & Carpenter's square</li>
+          </ul>
+
+          <h4>Step-by-Step Guide:</h4>
+          <ol>
+            <li>
+              <strong>Preparation:</strong>
+              <p>Sand all wooden pieces with medium grit sandpaper, followed by fine grit, to ensure smooth surfaces. Wipe the wood clean to remove any dust.</p>
+            </li>
+            <li>
+              <strong>Position the Horizontal Base:</strong>
+              <p>Lay the horizontal base flat on the ground. This will serve as the seat of the chair.</p>
+            </li>
+            <li>
+              <strong>Attach the Backrest:</strong>
+              <p>Position the shorter vertical piece at the rear edge of the horizontal base. Use a carpenter's square to ensure it is aligned properly. Angle the backrest slightly backward for ergonomic support. Apply wood glue along the edge where the backrest meets the base. Secure with wood screws, drilling through the base into the backrest. Ensure the screws are evenly spaced for stability.</p>
+            </li>
+            <li>
+              <strong>Attach the Structural Support/Shelving:</strong>
+              <p>Position the taller vertical piece vertically at the side of the horizontal base. Ensure it is aligned perpendicular to the base using the carpenter's square. Apply wood glue along the edge where it meets the base.</p>
+            </li>
+          </ol>
+        </div>
+      </div>
+      
+      <!-- Add Output View (4th Output) -->
+      <div id="addOutputView" class="project-view" style="display: none;">
+        <div class="add-output-container">
+            <div class="add-output-circle">
+                <!-- The M letters will be added later via JS -->
+            </div>
+            <div class="add-output-center">
+                <div class="add-output-plus"></div>
+                <div class="add-output-text">Add your output</div>
+            </div>
+        </div>
+      </div>
+
       <div class="output-pagination">
         <span class="dot active"></span>
         <span class="dot"></span>
         <span class="dot"></span>
-      </div>
-    </div>
-
-    <!-- Instructions View -->
-    <div id="instructionsView" class="instructions-view" style="display: none;">
-      <div class="instructions-header">
-        <img id="instructionsImage" src="" alt="Selected Design Preview" class="small-output-preview" />
-      </div>
-      <div class="instructions-content">
-        <p>To build this minimalist chair design, follow these step-by-step instructions:</p>
-        <h4>Materials Needed:</h4>
-        <ul>
-          <li>1 flat rectangular wooden plank for the horizontal base (40" x 18" x 1")</li>
-          <li>1 shorter rectangular wooden plank for the backrest (20" x 18" x 1")</li>
-          <li>1 taller rectangular wooden plank for the structural support/shelving (30" x 6" x 1")</li>
-          <li>Wood screws & Wood glue</li>
-          <li>Sandpaper (medium and fine grit)</li>
-          <li>Wood finish (natural) & Drill</li>
-          <li>Saw (if adjustments are needed)</li>
-          <li>Measuring tape & Carpenter's square</li>
-        </ul>
-
-        <h4>Step-by-Step Guide:</h4>
-        <ol>
-          <li>
-            <strong>Preparation:</strong>
-            <p>Sand all wooden pieces with medium grit sandpaper, followed by fine grit, to ensure smooth surfaces. Wipe the wood clean to remove any dust.</p>
-          </li>
-          <li>
-            <strong>Position the Horizontal Base:</strong>
-            <p>Lay the horizontal base flat on the ground. This will serve as the seat of the chair.</p>
-          </li>
-          <li>
-            <strong>Attach the Backrest:</strong>
-            <p>Position the shorter vertical piece at the rear edge of the horizontal base. Use a carpenter's square to ensure it is aligned properly. Angle the backrest slightly backward for ergonomic support. Apply wood glue along the edge where the backrest meets the base. Secure with wood screws, drilling through the base into the backrest. Ensure the screws are evenly spaced for stability.</p>
-          </li>
-          <li>
-            <strong>Attach the Structural Support/Shelving:</strong>
-            <p>Position the taller vertical piece vertically at the side of the horizontal base. Ensure it is aligned perpendicular to the base using the carpenter's square. Apply wood glue along the edge where it meets the base.</p>
-          </li>
-        </ol>
+        <span class="dot"></span>
       </div>
     </div>
 
