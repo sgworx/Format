@@ -6,6 +6,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const projectInput = document.getElementById('projectInput');
   const projectNameContainer = document.querySelector('.project-name');
   const finalizeButton = document.getElementById('finalizeButton');
+  const instructionsView = document.getElementById('instructionsView');
+  const instructionsImage = document.getElementById('instructionsImage');
   let originalProjectName = '';
 
   if (editProjectBtn) {
@@ -177,6 +179,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
   if (backButton) {
     backButton.addEventListener('click', () => {
+      // If instructions are visible, go back to 3D view
+      if (instructionsView.style.display === 'flex') {
+        instructionsView.style.display = 'none';
+        nextStepLayout.style.display = 'flex';
+        finalizeButton.style.display = 'flex';
+        return;
+      }
+      
+      // Otherwise, go back to output selection
       nextStepLayout.style.display = 'none';
       outputArea.style.display = 'flex';
       if (topBarText) {
@@ -249,8 +260,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
   if (finalizeButton) {
     finalizeButton.addEventListener('click', () => {
-      console.log('Finalize button clicked. Go to next step.');
-      // Next step logic will go here
+      nextStepLayout.style.display = 'none';
+      instructionsView.style.display = 'flex';
+      instructionsImage.src = productImages[currentProductIndex];
+      finalizeButton.style.display = 'none';
     });
   }
 });
