@@ -8,6 +8,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const finalizeButton = document.getElementById('finalizeButton');
   const instructionsView = document.getElementById('instructionsView');
   const instructionsImage = document.getElementById('instructionsImage');
+  const threedContainer = document.querySelector('.threed-output-container');
+  const instructionsPaginationDots = document.querySelectorAll('#instructionsView .dot');
   let originalProjectName = '';
 
   if (editProjectBtn) {
@@ -107,7 +109,7 @@ document.addEventListener('DOMContentLoaded', () => {
     'assets/ComfyUI_00259_.png',
     'assets/ComfyUI_00258_.png'
   ];
-  const productImages = [...outputImages, outputImages[0]]; // 4 images for the product view
+  const productImages = [...outputImages]; // Now only 3 images
 
   let currentOutputIndex = 0;
   let currentProductIndex = 0;
@@ -179,17 +181,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
   if (backButton) {
     backButton.addEventListener('click', () => {
-      // If instructions are visible, go back to 3D view
-      if (instructionsView.style.display === 'flex') {
-        instructionsView.style.display = 'none';
-        nextStepLayout.style.display = 'flex';
-        finalizeButton.style.display = 'flex';
-        return;
-      }
-      
-      // Otherwise, go back to output selection
       nextStepLayout.style.display = 'none';
       outputArea.style.display = 'flex';
+      finalizeButton.style.display = 'none';
       if (topBarText) {
         topBarText.textContent = 'Output';
       }
@@ -198,9 +192,6 @@ document.addEventListener('DOMContentLoaded', () => {
       }
       if (projectNameContainer) {
         projectNameContainer.style.display = 'flex';
-      }
-      if (finalizeButton) {
-        finalizeButton.style.display = 'none';
       }
     });
   }
@@ -226,20 +217,56 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function updateProductPreview() {
-    if (selectedOutputPreview) {
+    // Determine what content to show based on the index
+    switch (currentProductIndex) {
+      case 0: // 3D Model
+        threedContainer.innerHTML = `
+          <model-viewer id="modelViewer" src="assets/stool.glb" alt="3D Stool Model" auto-rotate camera-controls></model-viewer>
+          <img src="assets/analysis.png" alt="Analysis" id="analysisImage" style="display: none;">
+          <div class="toggle-switch-container">
+            <label class="switch">
+              <input type="checkbox" id="viewToggle">
+              <span class="slider round"></span>
+            </label>
+          </div>`;
+        
+        const modelViewer = threedContainer.querySelector('#modelViewer');
+        const analysisImage = threedContainer.querySelector('#analysisImage');
+        const viewToggle = threedContainer.querySelector('#viewToggle');
+
+        if (viewToggle && modelViewer && analysisImage) {
+          viewToggle.addEventListener('change', () => {
+            if (viewToggle.checked) {
+              modelViewer.style.display = 'none';
+              analysisImage.style.display = 'block';
+            } else {
+              modelViewer.style.display = 'block';
+              analysisImage.style.display = 'none';
+            }
+          });
+        }
+        selectedOutputPreview.style.visibility = 'visible';
+        break;
+      case 1: // Text Instructions
+        threedContainer.innerHTML = `<div class="instructions-content">${document.getElementById('instructions-template').innerHTML}</div>`;
+        selectedOutputPreview.style.visibility = 'hidden';
+        break;
+      case 2: // Analysis Image
+        threedContainer.innerHTML = `<img src="assets/Diagrams.png" alt="Diagrams" id="analysisImage">`;
+        selectedOutputPreview.style.visibility = 'visible';
+        break;
+    }
+
+    // Update the image in the small preview (if not hidden)
+    if (selectedOutputPreview.style.visibility === 'visible') {
       selectedOutputPreview.src = productImages[currentProductIndex];
     }
+
+    // Update the pagination dots
     productPaginationDots.forEach((dot, index) => {
         dot.classList.toggle('active', index === currentProductIndex);
     });
   }
-
-  productPaginationDots.forEach((dot, index) => {
-    dot.addEventListener('click', () => {
-        currentProductIndex = index;
-        updateProductPreview();
-    });
-  });
 
   // — Initialize view —
   updateOutputView();
@@ -260,10 +287,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   if (finalizeButton) {
     finalizeButton.addEventListener('click', () => {
-      nextStepLayout.style.display = 'none';
-      instructionsView.style.display = 'flex';
-      instructionsImage.src = productImages[currentProductIndex];
-      finalizeButton.style.display = 'none';
+      currentProductIndex = (currentProductIndex + 1) % productImages.length;
+      updateProductPreview();
     });
   }
 });
