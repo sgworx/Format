@@ -50,48 +50,30 @@ document.addEventListener('DOMContentLoaded', () => {
   // — Show Prompt Input —
   const forwardButton = document.getElementById('forwardButton');
   const promptArea = document.getElementById('promptArea');
-  const container = document.getElementById('container');
-  const mainFooter = document.getElementById('mainFooter');
+  const footerCaptureControls = document.getElementById('footerCaptureControls');
+  const footerDivider = document.querySelector('.footer-divider');
 
-  if (forwardButton) {
+  if (forwardButton && promptArea && footerCaptureControls && footerDivider) {
     forwardButton.addEventListener('click', () => {
-      // Hide the footer buttons
-      const footerButtons = document.querySelectorAll('.footer-button');
-      footerButtons.forEach(btn => btn.style.display = 'none');
-      
-      // Hide the middle dot
-      const middleDot = document.querySelector('.middle-dot');
-      if (middleDot) middleDot.style.display = 'none';
-      
-      // Show prompt area
-      if (promptArea) promptArea.style.display = 'flex';
-      
-      // Hide main footer
-      if (mainFooter) mainFooter.style.display = 'none';
-      
-      // Add prompt mode class
-      if (container) container.classList.add('prompt-mode');
+      footerCaptureControls.style.display = 'none';
+      footerDivider.style.display = 'none';
+      promptArea.style.display = 'flex';
     });
   }
 
   // — Submit Prompt and Show Output —
   const promptForward = document.getElementById('promptForward');
-  const designPrompt = document.getElementById('designPrompt');
-  const outputText = document.getElementById('outputText');
-  const canvasArea = document.getElementById('canvasArea');
-  const outputPrompt = document.getElementById('outputPrompt');
+  const canvasWrapper = document.getElementById('canvasWrapper');
   const outputArea = document.getElementById('outputArea');
   const topBarText = document.getElementById('topBarText');
 
   if (promptForward) {
     promptForward.addEventListener('click', () => {
-      const prompt = designPrompt.value.trim();
-      if (outputText) outputText.textContent = prompt || 'Design Prompt...';
+      promptArea.style.display = 'none';
+      footerCaptureControls.style.display = 'flex';
+      footerDivider.style.display = 'block';
 
-      if (promptArea) promptArea.style.display = 'none';
-      if (canvasArea) canvasArea.style.display = 'none';
-
-      if (outputPrompt) outputPrompt.style.display = 'flex';
+      if (canvasWrapper) canvasWrapper.style.display = 'none';
       if (outputArea) outputArea.style.display = 'flex';
       if (topBarText) topBarText.textContent = 'Output';
     });
@@ -99,9 +81,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // — Output Image Swiping Logic —
   const outputImages = [
-    'assets/GeneratedOutput.png',
-    'assets/GeneratedOutput2.png',
-    'assets/GeneratedOutput3.png'
+    'assets/ComfyUI_00257_.png',
+    'assets/ComfyUI_00259_.png',
+    'assets/ComfyUI_00258_.png'
   ];
   let currentIndex = 0;
 
@@ -142,8 +124,8 @@ document.addEventListener('DOMContentLoaded', () => {
       // Copy the current output image to the small preview
       selectedOutputPreview.src = outputImg.src;
       
-      // Add minimized class to start transition
-      outputArea.classList.add('minimized');
+      // Hide the main output area
+      outputArea.style.display = 'none';
       
       // Show the next step layout
       nextStepLayout.style.display = 'flex';
@@ -152,32 +134,23 @@ document.addEventListener('DOMContentLoaded', () => {
       if (topBarText) {
         topBarText.textContent = 'Preview';
       }
-      
-      // Hide the original output pagination and navigation
-      const outputPagination = document.querySelector('.output-pagination');
-      const navButtons = document.querySelectorAll('.nav-btn');
-      
-      if (outputPagination) {
-        outputPagination.style.display = 'none';
-      }
-      
-      navButtons.forEach(btn => {
-        btn.style.display = 'none';
-      });
-      
-      // Hide the choose button after selection
-      chooseButton.style.display = 'none';
-    });
-  }
-
-  // — Regenerate placeholder —
-  const regenerateBtn = document.getElementById('regenerateBtn');
-  if (regenerateBtn) {
-    regenerateBtn.addEventListener('click', () => {
-      alert('This would regenerate based on the same prompt.');
     });
   }
 
   // — Initialize view —
   updateOutputView();
+
+  // --- Keyboard handling for prompt input ---
+  const designPromptInput = document.getElementById('designPrompt');
+  const container = document.getElementById('container');
+
+  if (designPromptInput && container) {
+    designPromptInput.addEventListener('focus', () => {
+      container.classList.add('keyboard-active');
+    });
+
+    designPromptInput.addEventListener('blur', () => {
+      container.classList.remove('keyboard-active');
+    });
+  }
 });
