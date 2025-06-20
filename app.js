@@ -56,26 +56,32 @@ document.addEventListener('DOMContentLoaded', () => {
   if (forwardButton && promptArea && footerCaptureControls && footerDivider) {
     forwardButton.addEventListener('click', () => {
       footerCaptureControls.style.display = 'none';
-      footerDivider.style.display = 'none';
       promptArea.style.display = 'flex';
     });
   }
 
   // — Submit Prompt and Show Output —
   const promptForward = document.getElementById('promptForward');
+  const promptAreaTop = document.getElementById('promptAreaTop');
+  const designPromptTop = document.getElementById('designPromptTop');
   const canvasWrapper = document.getElementById('canvasWrapper');
   const outputArea = document.getElementById('outputArea');
   const topBarText = document.getElementById('topBarText');
 
   if (promptForward) {
     promptForward.addEventListener('click', () => {
-      promptArea.style.display = 'none';
-      footerCaptureControls.style.display = 'flex';
-      footerDivider.style.display = 'block';
-
       if (canvasWrapper) canvasWrapper.style.display = 'none';
       if (outputArea) outputArea.style.display = 'flex';
       if (topBarText) topBarText.textContent = 'Output';
+      
+      // Copy the prompt text to the top prompt and hide bottom prompt
+      if (designPromptTop && designPrompt) {
+        designPromptTop.value = designPrompt.value;
+        promptArea.style.display = 'none';
+      }
+      
+      // Initialize the output view
+      updateOutputView();
     });
   }
 
