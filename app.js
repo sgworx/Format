@@ -126,6 +126,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const selectedOutputPreview = document.getElementById('selectedOutputPreview');
   const modelViewer = document.getElementById('modelViewer');
   const autoRotateToggle = document.getElementById('autoRotateToggle');
+  const analysisImage = document.getElementById('analysisImage');
 
   if (chooseButton && outputArea && nextStepLayout && selectedOutputPreview && outputImg) {
     chooseButton.addEventListener('click', () => {
@@ -145,14 +146,24 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  if (autoRotateToggle && modelViewer) {
+  if (autoRotateToggle && modelViewer && analysisImage) {
     autoRotateToggle.addEventListener('change', () => {
       if (autoRotateToggle.checked) {
-        modelViewer.setAttribute('auto-rotate', '');
+        modelViewer.style.display = 'none';
+        analysisImage.style.display = 'block';
       } else {
-        modelViewer.removeAttribute('auto-rotate');
+        modelViewer.style.display = 'block';
+        analysisImage.style.display = 'none';
       }
     });
+    // Set initial state based on checkbox
+    if (autoRotateToggle.checked) {
+      modelViewer.style.display = 'none';
+      analysisImage.style.display = 'block';
+    } else {
+      modelViewer.style.display = 'block';
+      analysisImage.style.display = 'none';
+    }
   }
 
   // — Initialize view —
