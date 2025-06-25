@@ -8,7 +8,8 @@ class FormatApp {
       currentOutputIndex: 0,
       currentProductIndex: 0,
       selectedFile: null,
-      isModelViewerLoaded: false
+      isModelViewerLoaded: false,
+      cameraStream: null
     };
 
     this.config = {
@@ -53,7 +54,7 @@ class FormatApp {
       'analysisImage', 'diagramsImage', 'instructionsView', 'addOutputView',
       'compositionView', 'previewImage', 'placeholderText', 'addOutputBtn',
       'cameraCaptureView', 'cameraViewPreview1', 'cameraViewPreview2',
-      'addOutputCameraInput'
+      'addOutputCameraInput', 'cameraVideo'
     ];
 
     elementIds.forEach(id => {
@@ -453,6 +454,13 @@ class FormatApp {
     this.hideAllViews();
     this.state.currentView = viewName;
 
+    // Manage camera stream based on view
+    if (viewName === 'capture') {
+      this.startCamera();
+    } else {
+      this.stopCamera();
+    }
+
     switch (viewName) {
       case 'home':
         this.showHomeView();
@@ -621,6 +629,44 @@ class FormatApp {
   stopCaptureAnimations() {
     if (this.elements.footerCaptureControls) {
       this.elements.footerCaptureControls.classList.add('image-loaded');
+    }
+  }
+
+  // NEW: Camera handling
+  startCamera() {
+    // If camera already active, do nothing
+    if (this.state.cameraStream) return;
+
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      console.warn('Camera API not supported.');
+      return;
+    }
+
+    navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' }, audio: false })
+      .then((stream) => {
+        this.state.cameraStream = stream;
+        if (this.elements.cameraVideo) {
+          this.elements.cameraVideo.srcObject = stream;
+          this.elements.cameraVideo.style.display = 'block';
+        }
+        // Hide placeholder when camera active
+        if (this.elements.placeholderText) {
+          this.elements.placeholderText.style.display = 'none';
+        }
+      })
+      .catch((err) => {
+        console.error('Error accessing camera:', err);
+      });
+  }
+
+  stopCamera() {
+    if (this.state.cameraStream) {
+      this.state.cameraStream.getTracks().forEach((track) => track.stop());
+      this.state.cameraStream = null;
+    }
+    if (this.elements.cameraVideo) {
+      this.elements.cameraVideo.style.display = 'none';
+      this.elements.cameraVideo.srcObject = null;
     }
   }
 

@@ -287,6 +287,16 @@ body {
   transition: all 0.4s ease;
 }
 
+/* NEW: Live camera video fills the canvas */
+#cameraVideo {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
 /* Footer controls */
 .footer {
   margin-top: auto;
