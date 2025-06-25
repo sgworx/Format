@@ -1,535 +1,982 @@
-// Wait for DOM to be fully loaded
-document.addEventListener('DOMContentLoaded', () => {
-  function createCircularMs() {
-    const circle = document.querySelector('.add-output-circle');
-    if (!circle) return;
+// Enhanced forMat Application
+// Optimized for performance, maintainability, and user experience
 
-    // Clear existing children to prevent duplication
-    while (circle.firstChild) {
-      circle.removeChild(circle.firstChild);
-    }
+class FormatApp {
+  constructor() {
+    this.state = {
+      currentView: 'home',
+      currentOutputIndex: 0,
+      currentProductIndex: 0,
+      selectedFile: null,
+      isModelViewerLoaded: false
+    };
 
-    const numMs = 12;
-    const radius = 100; // Corresponds to half the width/height of add-output-circle
+    this.config = {
+      outputImages: [
+        'assets/ComfyUI_00257_.png',
+        'assets/ComfyUI_00259_.png',
+        'assets/ComfyUI_00258_.png'
+      ],
+      compositionModels: [
+        'assets/Hy3D_00004_.glb',
+        'assets/Hy3D_00001_.glb',
+        'assets/Hy3D_00002_.glb',
+        'assets/Hy3D_00003_.glb'
+      ]
+    };
 
-    for (let i = 0; i < numMs; i++) {
-      const angle = (i / numMs) * 2 * Math.PI;
-      const x = radius * Math.cos(angle);
-      const y = radius * Math.sin(angle);
-
-      const mChar = document.createElement('div');
-      mChar.classList.add('m-char');
-      
-      // We position from the center, so translate by -50% to center the character itself
-      mChar.style.transform = `translate(-50%, -50%) translate(${x}px, ${y}px)`;
-      
-      circle.appendChild(mChar);
-    }
-  }
-
-  createCircularMs();
-
-  const logo = document.querySelector('.logo');
-
-  // — Project Name Editing —
-  const editProjectBtn = document.getElementById('editProjectBtn');
-  const projectName = document.getElementById('projectName');
-  const projectInput = document.getElementById('projectInput');
-  const projectNameContainer = document.querySelector('.project-name');
-  const finalizeButton = document.getElementById('finalizeButton');
-  const instructionsView = document.getElementById('instructionsView');
-  const instructionsImage = document.getElementById('instructionsImage');
-  const threedContainer = document.querySelector('.threed-output-container');
-  const instructionsPaginationDots = document.querySelectorAll('#instructionsView .dot');
-  let originalProjectName = '';
-
-  if (logo) {
-    logo.addEventListener('click', () => {
-      // Show capture view, hide others
-      if (canvasWrapper) canvasWrapper.style.display = 'flex';
-      if (outputArea) outputArea.style.display = 'none';
-      if (nextStepLayout) nextStepLayout.style.display = 'none';
-
-      // Reset top bar
-      if (topBarText) topBarText.textContent = 'Capture';
-      if (backButton) backButton.style.display = 'none';
-      if (projectNameContainer) projectNameContainer.style.display = 'flex';
-      if (finalizeButton) finalizeButton.style.display = 'none';
-      promptAreaTop.style.display = 'none';
-      
-      // Cancel project name editing if active
-      if (projectInput.style.display === 'inline') {
-        projectInput.style.display = 'none';
-        projectName.style.display = 'inline';
-        editProjectBtn.style.display = 'inline';
-      }
-
-      // Reset footer
-      if (footerCaptureControls) footerCaptureControls.style.display = 'flex';
-      if (promptArea) promptArea.style.display = 'none';
-      
-      // Reset canvas
-      if (previewImage) {
-          previewImage.src = '';
-          previewImage.style.display = 'none';
-      }
-      if (placeholderText) placeholderText.style.display = 'block';
-
-      // Reset state variables
-      currentOutputIndex = 0;
-      currentProductIndex = 0;
-      updateOutputView();
-    });
-  }
-
-  if (editProjectBtn) {
-    editProjectBtn.addEventListener('click', () => {
-      projectInput.value = projectName.textContent.replace('…', '');
-      projectName.style.display = 'none';
-      editProjectBtn.style.display = 'none';
-      projectInput.style.display = 'inline';
-      projectInput.focus();
-      if (projectNameContainer) {
-        projectNameContainer.style.display = 'none';
-      }
-      if (finalizeButton) {
-        finalizeButton.style.display = 'flex';
-      }
-    });
-  }
-
-  if (projectInput) {
-    projectInput.addEventListener('blur', function() {
-      const newName = this.value.trim();
-      if (newName) projectName.textContent = newName;
-      this.style.display = 'none';
-      projectName.style.display = 'inline';
-      editProjectBtn.style.display = 'inline';
-      if (projectNameContainer) {
-        projectNameContainer.style.display = 'flex';
-      }
-      if (finalizeButton) {
-        finalizeButton.style.display = 'none';
-      }
-    });
-  }
-
-  // — Gallery Upload & Camera Capture —
-  function loadPreview(file) {
-    if (!file) return;
-    const previewImage = document.getElementById('previewImage');
-    const placeholderText = document.getElementById('placeholderText');
-    if (previewImage && file) {
-      previewImage.src = URL.createObjectURL(file);
-      previewImage.style.display = 'block';
-      if (placeholderText) placeholderText.style.display = 'none';
-    }
-  }
-
-  const fileInputGallery = document.getElementById('fileInputGallery');
-  const fileInputCamera = document.getElementById('fileInputCamera');
-
-  if (fileInputGallery) {
-    fileInputGallery.addEventListener('change', e => loadPreview(e.target.files[0]));
-  }
-  if (fileInputCamera) {
-    fileInputCamera.addEventListener('change', e => loadPreview(e.target.files[0]));
-  }
-
-  // — Show Prompt Input —
-  const forwardButton = document.getElementById('forwardButton');
-  const promptArea = document.getElementById('promptArea');
-  const footerCaptureControls = document.getElementById('footerCaptureControls');
-
-  if (forwardButton && promptArea && footerCaptureControls) {
-    forwardButton.addEventListener('click', () => {
-      footerCaptureControls.style.display = 'none';
-      promptArea.style.display = 'flex';
-    });
-  }
-
-  // — Submit Prompt and Show Output —
-  const promptForward = document.getElementById('promptForward');
-  const promptAreaTop = document.getElementById('promptAreaTop');
-  const designPromptTop = document.getElementById('designPromptTop');
-  const canvasWrapper = document.getElementById('canvasWrapper');
-  const outputArea = document.getElementById('outputArea');
-  const topBarText = document.getElementById('topBarText');
-  const designPrompt = document.getElementById('designPrompt');
-
-  if (promptForward) {
-    promptForward.addEventListener('click', () => {
-      if (canvasWrapper) canvasWrapper.style.display = 'none';
-      if (outputArea) outputArea.style.display = 'flex';
-      if (topBarText) topBarText.textContent = 'Output';
-      
-      // Copy the prompt text to the top prompt and hide bottom prompt
-      if (designPromptTop && designPrompt) {
-        designPromptTop.value = designPrompt.value;
-        promptArea.style.display = 'none';
-      }
-      
-      // Initialize the output view
-      updateOutputView();
-    });
-  }
-
-  // — Output Image Swiping Logic —
-  const outputImages = [
-    'assets/ComfyUI_00257_.png',
-    'assets/ComfyUI_00259_.png',
-    'assets/ComfyUI_00258_.png'
-  ];
-  const productImages = [...outputImages]; // Now only 3 images
-
-  let currentOutputIndex = 0;
-  let currentProductIndex = 0;
-
-  const outputImg = document.getElementById('outputImage');
-  const dots = document.querySelectorAll('#outputArea .dot');
-
-  function updateOutputView() {
-    if (outputImg && outputImages[currentOutputIndex]) {
-      outputImg.src = outputImages[currentOutputIndex];
-      dots.forEach((dot, i) => dot.classList.toggle('active', i === currentOutputIndex));
-    }
-  }
-
-  const prevOutput = document.getElementById('prevOutput');
-  const nextOutput = document.getElementById('nextOutput');
-
-  if (prevOutput) {
-    prevOutput.addEventListener('click', () => {
-      currentOutputIndex = (currentOutputIndex - 1 + outputImages.length) % outputImages.length;
-      updateOutputView();
-    });
-  }
-
-  if (nextOutput) {
-    nextOutput.addEventListener('click', () => {
-      currentOutputIndex = (currentOutputIndex + 1) % outputImages.length;
-      updateOutputView();
-    });
-  }
-
-  // — Choose Button Logic —
-  const chooseButton = document.getElementById('chooseButton');
-  const nextStepLayout = document.getElementById('nextStepLayout');
-  const selectedOutputPreview = document.getElementById('selectedOutputPreview');
-  const modelViewer = document.getElementById('modelViewer');
-  const autoRotateToggle = document.getElementById('autoRotateToggle');
-  const analysisImage = document.getElementById('analysisImage');
-  const diagramsImage = document.getElementById('diagramsImage');
-  const backButton = document.getElementById('backButton');
-  const productPaginationDots = document.querySelectorAll('#nextStepLayout .output-pagination .dot');
-  const addOutputView = document.getElementById('addOutputView');
-  const toggleSwitchContainer = document.querySelector('.toggle-switch-container');
-  const addOutputCircle = document.querySelector('.add-output-circle');
-  const addOutputCameraInput = document.getElementById('addOutputCameraInput');
-
-  if (chooseButton && outputArea && nextStepLayout && selectedOutputPreview && outputImg) {
-    chooseButton.addEventListener('click', () => {
-      // Hide the main output area
-      outputArea.style.display = 'none';
-      
-      // Show the next step layout
-      nextStepLayout.style.display = 'flex';
-      
-      // Update the top bar text and show the back button
-      if (topBarText) {
-        topBarText.textContent = 'Project 4 Stool';
-      }
-      if (backButton) {
-        backButton.style.display = 'flex';
-      }
-      if (projectNameContainer) {
-        projectNameContainer.style.display = 'none';
-      }
-      if (finalizeButton) {
-        finalizeButton.style.display = 'flex';
-      }
-
-      // Set the chosen image in the preview and make it visible.
-      // This image will now stay the same while navigating the product views.
-      selectedOutputPreview.src = outputImages[currentOutputIndex];
-      selectedOutputPreview.style.visibility = 'visible';
-
-      // Always start the product view at the first item (3D model).
-      currentProductIndex = 0;
-      updateProductPreview();
-      updateProjectView();
-      updatePagination();
-    });
-  }
-
-  if (backButton) {
-    backButton.addEventListener('click', () => {
-      nextStepLayout.style.display = 'none';
-      outputArea.style.display = 'flex';
-      finalizeButton.style.display = 'none';
-      if (topBarText) {
-        topBarText.textContent = 'Output';
-      }
-      if (backButton) {
-        backButton.style.display = 'none';
-      }
-      if (projectNameContainer) {
-        projectNameContainer.style.display = 'flex';
-      }
-    });
-  }
-
-  // Array of 3D models for the composition view
-  const compositionModels = [
-    'assets/Hy3D_00004_.glb',
-    'assets/Hy3D_00001_.glb',
-    'assets/Hy3D_00002_.glb',
-    'assets/Hy3D_00003_.glb'
-  ];
-
-  function updateProductPreview() {
-    // Hide all views first
-    if (threedContainer) threedContainer.style.display = 'none';
-    if (instructionsView) instructionsView.style.display = 'none';
-    if (addOutputView) addOutputView.style.display = 'none';
-    if (compositionView) compositionView.style.display = 'none';
-    if (modelViewer) modelViewer.style.display = 'none';
-    if (analysisImage) analysisImage.style.display = 'none';
-    if (diagramsImage) diagramsImage.style.display = 'none';
-    if (toggleSwitchContainer) toggleSwitchContainer.style.display = 'none';
+    this.elements = {};
+    this.boundMethods = {};
     
-    // Set the correct header thumbnail
-    if (currentProductIndex === 3) {
-      selectedOutputPreview.src = 'assets/ComfyUI_00257_.png'; // Thumbnail for the 4th output
-    } else {
-      selectedOutputPreview.src = 'assets/ComfyUI_00259_.png'; // Default thumbnail for outputs 1-3
+    this.init();
+  }
+
+  // Initialize the application
+  init() {
+    this.cacheElements();
+    this.bindEvents();
+    this.createCircularMs();
+    this.initializeMouseFollower();
+    this.updateOutputView();
+  }
+
+  // Cache all DOM elements to avoid repeated queries
+  cacheElements() {
+    const elementIds = [
+      'homeView', 'canvasWrapper', 'outputArea', 'nextStepLayout',
+      'topBarText', 'backButton', 'finalizeButton', 'homeStartButton',
+      'editProjectBtn', 'projectName', 'projectInput', 'fileInputGallery',
+      'fileInputCamera', 'canvasArea', 'forwardButton', 'promptArea',
+      'footerCaptureControls', 'promptForward', 'designPrompt', 'designPromptTop',
+      'outputImage', 'prevOutput', 'nextOutput', 'chooseButton',
+      'selectedOutputPreview', 'modelViewer', 'autoRotateToggle',
+      'analysisImage', 'diagramsImage', 'instructionsView', 'addOutputView',
+      'compositionView', 'previewImage', 'placeholderText', 'addOutputBtn',
+      'cameraCaptureView', 'cameraViewPreview1', 'cameraViewPreview2',
+      'addOutputCameraInput'
+    ];
+
+    elementIds.forEach(id => {
+      this.elements[id] = document.getElementById(id);
+    });
+
+    // Cache element collections
+    this.elements.logo = document.querySelector('.logo');
+    this.elements.projectNameContainer = document.querySelector('.project-name');
+    this.elements.toggleSwitchContainer = document.querySelector('.toggle-switch-container');
+    this.elements.addOutputCircle = document.querySelector('.add-output-circle');
+    this.elements.footerDivider = document.querySelector('.footer-divider');
+    this.elements.container = document.getElementById('container');
+    this.elements.projectViewsContainer = document.querySelector('.project-views-container');
+    this.elements.projectPagination = document.querySelector('.project-pagination');
+
+    // Cache dot collections
+    this.elements.outputDots = document.querySelectorAll('#outputArea .dot');
+    this.elements.productDots = document.querySelectorAll('#nextStepLayout .output-pagination .dot');
+  }
+
+  // Bind all event listeners with proper context
+  bindEvents() {
+    // Bind methods to maintain context
+    this.boundMethods = {
+      handleHomeStart: this.handleHomeStart.bind(this),
+      handleLogoClick: this.handleLogoClick.bind(this),
+      handleProjectEdit: this.handleProjectEdit.bind(this),
+      handleProjectInputBlur: this.handleProjectInputBlur.bind(this),
+      handleFileUpload: this.handleFileUpload.bind(this),
+      handleCanvasClick: this.handleCanvasClick.bind(this),
+      handleForwardClick: this.handleForwardClick.bind(this),
+      handlePromptSubmit: this.handlePromptSubmit.bind(this),
+      handleOutputNavigation: this.handleOutputNavigation.bind(this),
+      handleChooseButton: this.handleChooseButton.bind(this),
+      handleBackButton: this.handleBackButton.bind(this),
+      handleToggleSwitch: this.handleToggleSwitch.bind(this),
+      handleProductDotClick: this.handleProductDotClick.bind(this),
+      handleFinalizeButton: this.handleFinalizeButton.bind(this),
+      handleAddOutputButton: this.handleAddOutputButton.bind(this),
+      handleKeyboardFocus: this.handleKeyboardFocus.bind(this),
+      handleKeyboardBlur: this.handleKeyboardBlur.bind(this)
+    };
+
+    // Add event listeners
+    this.addEventListeners();
+  }
+
+  addEventListeners() {
+    const { elements, boundMethods } = this;
+
+    // Navigation events
+    if (elements.homeStartButton) {
+      elements.homeStartButton.addEventListener('click', boundMethods.handleHomeStart);
     }
 
-    // Show the correct view based on index
+    if (elements.logo) {
+      elements.logo.addEventListener('click', boundMethods.handleLogoClick);
+    }
+
+    if (elements.backButton) {
+      elements.backButton.addEventListener('click', boundMethods.handleBackButton);
+    }
+
+    // Project name editing
+    if (elements.editProjectBtn) {
+      elements.editProjectBtn.addEventListener('click', boundMethods.handleProjectEdit);
+    }
+
+    if (elements.projectInput) {
+      elements.projectInput.addEventListener('blur', boundMethods.handleProjectInputBlur);
+    }
+
+    // File handling
+    if (elements.fileInputGallery) {
+      elements.fileInputGallery.addEventListener('change', (e) => 
+        boundMethods.handleFileUpload(e.target.files[0])
+      );
+    }
+
+    if (elements.fileInputCamera) {
+      elements.fileInputCamera.addEventListener('change', (e) => 
+        boundMethods.handleFileUpload(e.target.files[0])
+      );
+    }
+
+    if (elements.addOutputCameraInput) {
+      elements.addOutputCameraInput.addEventListener('change', (e) => 
+        boundMethods.handleFileUpload(e.target.files[0])
+      );
+    }
+
+    if (elements.canvasArea && elements.fileInputGallery) {
+      elements.canvasArea.addEventListener('click', boundMethods.handleCanvasClick);
+    }
+
+    // UI interactions
+    if (elements.forwardButton) {
+      elements.forwardButton.addEventListener('click', boundMethods.handleForwardClick);
+    }
+
+    if (elements.promptForward) {
+      elements.promptForward.addEventListener('click', boundMethods.handlePromptSubmit);
+    }
+
+    if (elements.chooseButton) {
+      elements.chooseButton.addEventListener('click', boundMethods.handleChooseButton);
+    }
+
+    if (elements.finalizeButton) {
+      elements.finalizeButton.addEventListener('click', boundMethods.handleFinalizeButton);
+    }
+
+    if (elements.addOutputBtn) {
+      elements.addOutputBtn.addEventListener('click', boundMethods.handleAddOutputButton);
+    }
+
+    // Output navigation
+    if (elements.prevOutput) {
+      elements.prevOutput.addEventListener('click', () => 
+        boundMethods.handleOutputNavigation(-1)
+      );
+    }
+
+    if (elements.nextOutput) {
+      elements.nextOutput.addEventListener('click', () => 
+        boundMethods.handleOutputNavigation(1)
+      );
+    }
+
+    // Toggle switch
+    if (elements.autoRotateToggle) {
+      elements.autoRotateToggle.addEventListener('change', boundMethods.handleToggleSwitch);
+    }
+
+    // Product pagination dots
+    elements.productDots.forEach((dot, index) => {
+      dot.addEventListener('click', () => boundMethods.handleProductDotClick(index));
+    });
+
+    // Keyboard handling
+    if (elements.designPrompt && elements.container) {
+      elements.designPrompt.addEventListener('focus', boundMethods.handleKeyboardFocus);
+      elements.designPrompt.addEventListener('blur', boundMethods.handleKeyboardBlur);
+    }
+  }
+
+  // Event handlers
+  handleHomeStart() {
+    this.showView('capture');
+  }
+
+  handleLogoClick() {
+    this.showView('home');
+    this.resetState();
+  }
+
+  handleProjectEdit() {
+    const { projectInput, projectName, editProjectBtn, projectNameContainer, finalizeButton } = this.elements;
+    
+    if (projectInput && projectName && editProjectBtn) {
+      projectInput.value = projectName.textContent.replace('…', '');
+      this.toggleVisibility(projectName, false);
+      this.toggleVisibility(editProjectBtn, false);
+      this.toggleVisibility(projectInput, true, 'inline');
+      this.toggleVisibility(projectNameContainer, false);
+      this.toggleVisibility(finalizeButton, true, 'flex');
+      projectInput.focus();
+    }
+  }
+
+  handleProjectInputBlur() {
+    const { projectInput, projectName, editProjectBtn, projectNameContainer, finalizeButton } = this.elements;
+    
+    const newName = projectInput.value.trim();
+    if (newName) projectName.textContent = newName;
+    
+    this.toggleVisibility(projectInput, false);
+    this.toggleVisibility(projectName, true, 'inline');
+    this.toggleVisibility(editProjectBtn, true, 'inline');
+    this.toggleVisibility(projectNameContainer, true, 'flex');
+    this.toggleVisibility(finalizeButton, false);
+  }
+
+  handleFileUpload(file) {
+    if (!file) return;
+    
+    this.state.selectedFile = file;
+    this.loadPreview(file);
+  }
+
+  handleCanvasClick() {
+    if (this.elements.fileInputGallery) {
+      this.elements.fileInputGallery.click();
+    }
+  }
+
+  handleForwardClick() {
+    if (!this.elements.forwardButton?.classList.contains('enabled')) return;
+    
+    // Skip the minimized view completely - go straight to output with preview
+    this.showOutputWithPreview();
+    this.copyPromptText();
+    this.updateOutputView();
+  }
+
+  showMinimizedPromptView() {
+    // Hide the footer capture controls
+    this.toggleVisibility(this.elements.footerCaptureControls, false);
+    
+    // Show the prompt area
+    this.toggleVisibility(this.elements.promptArea, true, 'flex');
+    
+    // Apply minimized styles
+    if (this.elements.canvasWrapper) {
+      this.elements.canvasWrapper.classList.add('minimized');
+    }
+    if (this.elements.canvasArea) {
+      this.elements.canvasArea.classList.add('small-preview');
+    }
+
+    // Auto-focus the input
+    if (this.elements.designPrompt) {
+      setTimeout(() => {
+        this.elements.designPrompt.focus();
+      }, 100);
+    }
+  }
+
+  handlePromptSubmit() {
+    // Go to output with small preview at top (Image 4)
+    this.showOutputWithPreview();
+    this.copyPromptText();
+    this.updateOutputView();
+  }
+
+  showOutputWithPreview() {
+    // Apply minimized state for the small preview
+    if (this.elements.canvasWrapper) {
+      this.elements.canvasWrapper.classList.add('minimized');
+      this.elements.canvasWrapper.style.position = 'absolute';
+      this.elements.canvasWrapper.style.top = '100px';
+      this.elements.canvasWrapper.style.left = '20px';
+      this.elements.canvasWrapper.style.zIndex = '20';
+    }
+    if (this.elements.canvasArea) {
+      this.elements.canvasArea.classList.add('small-preview');
+    }
+    
+    // Show output area with preview layout
+    this.toggleVisibility(this.elements.outputArea, true, 'flex');
+    this.elements.outputArea.classList.add('with-preview');
+    
+    // Show the prompt area top for the output view
+    this.toggleVisibility(this.elements.promptAreaTop, true, 'flex');
+    
+    // Hide capture controls and prompt input
+    this.toggleVisibility(this.elements.footerCaptureControls, false);
+    this.toggleVisibility(this.elements.promptArea, false);
+    
+    this.updateTopBar('Output');
+  }
+
+  showTypingState() {
+    // Keep the canvas wrapper visible but minimized
+    this.toggleVisibility(this.elements.canvasWrapper, true, 'flex');
+    
+    // Hide the full capture controls
+    this.toggleVisibility(this.elements.footerCaptureControls, false);
+    
+    // Show the prompt area immediately
+    this.toggleVisibility(this.elements.promptArea, true, 'flex');
+    
+    // Apply minimized styles to canvas wrapper and area
+    if (this.elements.canvasWrapper) {
+      this.elements.canvasWrapper.classList.add('minimized');
+    }
+    if (this.elements.canvasArea) {
+      this.elements.canvasArea.classList.add('small-preview');
+    }
+
+    // Focus on the text input so user can start typing immediately
+    if (this.elements.designPrompt) {
+      setTimeout(() => {
+        this.elements.designPrompt.focus();
+      }, 100);
+    }
+
+    // Keep showing the capture view but in minimized state
+    this.updateTopBar('Capture');
+  }
+
+  handlePromptSubmit() {
+    // Simple: go directly to the separate output page (like before)
+    this.showView('output');
+    this.copyPromptText();
+    this.updateOutputView();
+  }
+
+  showInlineOutput() {
+    // Create a container for the top section (image + prompt)
+    const container = document.createElement('div');
+    container.className = 'inline-top-section';
+    
+    // Modify canvas wrapper for inline layout
+    if (this.elements.canvasWrapper) {
+      this.elements.canvasWrapper.classList.add('with-inline-output');
+      this.elements.canvasWrapper.style.position = 'relative';
+      this.elements.canvasWrapper.style.top = 'auto';
+      this.elements.canvasWrapper.style.left = 'auto';
+      this.elements.canvasWrapper.style.float = 'left';
+      this.elements.canvasWrapper.style.marginRight = '15px';
+    }
+    
+    if (this.elements.canvasArea) {
+      this.elements.canvasArea.classList.add('with-inline-output');
+    }
+    
+    // Modify prompt area for inline layout
+    if (this.elements.promptArea) {
+      this.elements.promptArea.classList.add('inline-layout');
+      this.elements.promptArea.style.position = 'relative';
+      this.elements.promptArea.style.top = 'auto';
+      this.elements.promptArea.style.float = 'left';
+      this.elements.promptArea.style.width = 'calc(100% - 180px)';
+    }
+    
+    // Show output area below
+    if (this.elements.outputArea) {
+      this.elements.outputArea.style.display = 'flex';
+      this.elements.outputArea.style.position = 'relative';
+      this.elements.outputArea.style.marginTop = '20px';
+      this.elements.outputArea.style.clear = 'both';
+      this.elements.outputArea.classList.add('inline');
+    }
+    
+    // Hide the prompt area top section since we're keeping original
+    if (this.elements.promptAreaTop) {
+      this.elements.promptAreaTop.style.display = 'none';
+    }
+  }
+
+  handleOutputNavigation(direction) {
+    this.state.currentOutputIndex = this.getNextIndex(
+      this.state.currentOutputIndex, 
+      this.config.outputImages.length, 
+      direction
+    );
+    this.updateOutputView();
+  }
+
+  handleChooseButton() {
+    this.showView('project');
+    this.initializeProjectView();
+  }
+
+  handleBackButton() {
+    this.showView('output');
+    this.toggleVisibility(this.elements.finalizeButton, false);
+  }
+
+  handleToggleSwitch() {
+    if (this.state.currentProductIndex === 0) {
+      this.updateProductPreview();
+    }
+  }
+
+  handleProductDotClick(index) {
+    this.state.currentProductIndex = index;
+    this.updateProductPreview();
+  }
+
+  handleFinalizeButton() {
+    if (this.state.currentProductIndex === 3) {
+      this.showCompositionView();
+    }
+  }
+
+  handleAddOutputButton() {
+    this.showCameraView();
+  }
+
+  handleKeyboardFocus() {
+    if (this.elements.container) {
+      this.elements.container.classList.add('keyboard-active');
+    }
+  }
+
+  handleKeyboardBlur() {
+    if (this.elements.container) {
+      this.elements.container.classList.remove('keyboard-active');
+    }
+  }
+
+  // View management
+  showView(viewName) {
+    this.hideAllViews();
+    this.state.currentView = viewName;
+
+    switch (viewName) {
+      case 'home':
+        this.showHomeView();
+        break;
+      case 'capture':
+        this.showCaptureView();
+        break;
+      case 'output':
+        this.showOutputView();
+        break;
+      case 'project':
+        this.showProjectView();
+        break;
+    }
+  }
+
+  hideAllViews() {
+    const views = ['homeView', 'canvasWrapper', 'outputArea', 'nextStepLayout'];
+    views.forEach(view => this.toggleVisibility(this.elements[view], false));
+  }
+
+  showHomeView() {
+    this.toggleVisibility(this.elements.homeView, true, 'flex');
+    this.toggleVisibility(this.elements.topBarText, false);
+    this.toggleVisibility(this.elements.projectNameContainer, false);
+    this.toggleVisibility(this.elements.backButton, false);
+    this.toggleVisibility(this.elements.finalizeButton, false);
+    this.toggleVisibility(this.elements.footerCaptureControls, false);
+    this.toggleVisibility(this.elements.promptArea, false);
+    this.toggleVisibility(this.elements.footerDivider, false);
+  }
+
+  showCaptureView() {
+    this.toggleVisibility(this.elements.canvasWrapper, true, 'flex');
+    this.toggleVisibility(this.elements.footerCaptureControls, true, 'flex');
+    this.toggleVisibility(this.elements.footerDivider, true, 'block');
+    
+    // Reset any minimized states
+    if (this.elements.canvasWrapper) {
+      this.elements.canvasWrapper.classList.remove('minimized');
+    }
+    if (this.elements.canvasArea) {
+      this.elements.canvasArea.classList.remove('small-preview');
+    }
+    
+    this.updateTopBar('Capture');
+  }
+
+  showOutputView() {
+    // Hide the minimized capture view completely
+    this.toggleVisibility(this.elements.canvasWrapper, false);
+    
+    // Remove minimized state classes
+    if (this.elements.canvasWrapper) {
+      this.elements.canvasWrapper.classList.remove('minimized');
+    }
+    if (this.elements.canvasArea) {
+      this.elements.canvasArea.classList.remove('small-preview');
+    }
+    
+    // Show output area as separate page
+    this.toggleVisibility(this.elements.outputArea, true, 'flex');
+    this.updateTopBar('Output');
+    this.toggleVisibility(this.elements.promptArea, false);
+  }
+
+  showProjectView() {
+    this.toggleVisibility(this.elements.nextStepLayout, true, 'flex');
+    this.updateTopBar('Project 4 Stool');
+    this.toggleVisibility(this.elements.backButton, true, 'flex');
+    this.toggleVisibility(this.elements.projectNameContainer, false);
+    this.toggleVisibility(this.elements.finalizeButton, true, 'flex');
+  }
+
+  showCompositionView() {
+    this.hideProjectViews();
+    this.toggleVisibility(this.elements.compositionView, true, 'block');
+    this.initializeInteractiveComposition();
+  }
+
+  showCameraView() {
+    this.hideProjectViews();
+    this.toggleVisibility(this.elements.cameraCaptureView, true, 'flex');
+    this.setCameraPreviewImages();
+  }
+
+  // Utility methods
+  toggleVisibility(element, show, displayType = 'block') {
+    if (!element) return;
+    element.style.display = show ? displayType : 'none';
+  }
+
+  updateTopBar(text) {
+    if (this.elements.topBarText) {
+      this.elements.topBarText.textContent = text;
+      this.elements.topBarText.style.display = 'inline';
+    }
+    if (this.elements.projectNameContainer) {
+      this.elements.projectNameContainer.style.display = 'flex';
+    }
+  }
+
+  getNextIndex(current, length, direction) {
+    return (current + direction + length) % length;
+  }
+
+  resetState() {
+    this.state.currentOutputIndex = 0;
+    this.state.currentProductIndex = 0;
+    this.state.selectedFile = null;
+    
+    // Reset UI elements
+    if (this.elements.previewImage) {
+      this.elements.previewImage.src = '';
+      this.elements.previewImage.style.display = 'none';
+    }
+    if (this.elements.placeholderText) {
+      this.elements.placeholderText.style.display = 'block';
+    }
+    if (this.elements.forwardButton) {
+      this.elements.forwardButton.classList.remove('enabled');
+    }
+    
+    // Reset minimized states
+    if (this.elements.canvasWrapper) {
+      this.elements.canvasWrapper.classList.remove('minimized');
+    }
+    if (this.elements.canvasArea) {
+      this.elements.canvasArea.classList.remove('small-preview');
+    }
+  }
+
+  // File handling
+  loadPreview(file) {
+    if (!file || !this.elements.previewImage) return;
+
+    const url = URL.createObjectURL(file);
+    this.elements.previewImage.src = url;
+    this.elements.previewImage.style.display = 'block';
+    
+    if (this.elements.placeholderText) {
+      this.elements.placeholderText.style.display = 'none';
+    }
+    
+    this.enableForwardButton();
+    this.stopCaptureAnimations();
+    
+    // Auto-populate prompt if it's empty
+    this.autoPopulatePrompt();
+  }
+
+  autoPopulatePrompt() {
+    if (this.elements.designPrompt && !this.elements.designPrompt.value.trim()) {
+      // Use a default prompt or the one from the interface
+      const defaultPrompt = "make a table from this material";
+      this.elements.designPrompt.value = defaultPrompt;
+    }
+  }
+
+  enableForwardButton() {
+    if (this.elements.forwardButton) {
+      this.elements.forwardButton.classList.add('enabled');
+    }
+  }
+
+  stopCaptureAnimations() {
+    if (this.elements.footerCaptureControls) {
+      this.elements.footerCaptureControls.classList.add('image-loaded');
+    }
+  }
+
+  // Output management
+  updateOutputView() {
+    if (this.elements.outputImage && this.config.outputImages[this.state.currentOutputIndex]) {
+      this.elements.outputImage.src = this.config.outputImages[this.state.currentOutputIndex];
+      this.updateOutputDots();
+    }
+  }
+
+  updateOutputDots() {
+    this.elements.outputDots.forEach((dot, i) => {
+      dot.classList.toggle('active', i === this.state.currentOutputIndex);
+    });
+  }
+
+  copyPromptText() {
+    if (this.elements.designPromptTop && this.elements.designPrompt) {
+      this.elements.designPromptTop.value = this.elements.designPrompt.value;
+    }
+    
+    // If no prompt text exists, use default
+    if (!this.elements.designPrompt?.value.trim() && this.elements.designPromptTop) {
+      this.elements.designPromptTop.value = "make a table from this material";
+    }
+  }
+
+  // Project view management
+  initializeProjectView() {
+    if (this.elements.selectedOutputPreview) {
+      this.elements.selectedOutputPreview.src = this.config.outputImages[this.state.currentOutputIndex];
+      this.elements.selectedOutputPreview.style.visibility = 'visible';
+    }
+    
+    this.state.currentProductIndex = 0;
+    this.updateProductPreview();
+    this.updateProductDots();
+  }
+
+  updateProductPreview() {
+    this.hideAllProductViews();
+    this.updateSelectedPreviewImage();
+    this.showCurrentProductView();
+    this.updateProductDots();
+  }
+
+  hideAllProductViews() {
+    const views = [
+      'threedContainer', 'instructionsView', 'addOutputView', 
+      'compositionView', 'modelViewer', 'analysisImage', 
+      'diagramsImage', 'toggleSwitchContainer'
+    ];
+    
+    views.forEach(view => {
+      if (this.elements[view]) {
+        this.elements[view].style.display = 'none';
+      }
+    });
+
+    const compositionView = document.getElementById('compositionView');
+    if (compositionView) compositionView.style.display = 'none';
+  }
+
+  updateSelectedPreviewImage() {
+    if (!this.elements.selectedOutputPreview) return;
+    
+    if (this.state.currentProductIndex === 3) {
+      this.elements.selectedOutputPreview.src = 'assets/ComfyUI_00257_.png';
+    } else {
+      this.elements.selectedOutputPreview.src = 'assets/ComfyUI_00259_.png';
+    }
+  }
+
+  showCurrentProductView() {
+    const { currentProductIndex } = this.state;
+    
     switch (currentProductIndex) {
       case 0: // 3D Model & Analysis Toggle
-        if (threedContainer) threedContainer.style.display = 'flex';
-        if (toggleSwitchContainer) toggleSwitchContainer.style.display = 'block';
-        // Show either model or analysis based on toggle
-        if (autoRotateToggle.checked) {
-          if (modelViewer) modelViewer.style.display = 'block';
-        } else {
-          if (analysisImage) analysisImage.style.display = 'block';
-        }
+        this.show3DModelView();
         break;
       case 1: // Instructions
-        if (instructionsView) instructionsView.style.display = 'flex';
+        this.toggleVisibility(this.elements.instructionsView, true, 'flex');
         break;
-      case 2: // Diagrams Image
-        if (threedContainer) threedContainer.style.display = 'flex';
-        if (diagramsImage) diagramsImage.style.display = 'block';
+      case 2: // Diagrams
+        this.showDiagramsView();
         break;
       case 3: // Add Output
-        if (addOutputView) addOutputView.style.display = 'flex';
+        this.toggleVisibility(this.elements.addOutputView, true, 'flex');
         break;
     }
+  }
+
+  show3DModelView() {
+    const threedContainer = document.querySelector('.threed-output-container');
+    if (threedContainer) {
+      threedContainer.style.display = 'flex';
+    }
     
-    // Update dots
-    productPaginationDots.forEach((dot, i) => {
-      dot.classList.toggle('active', i === currentProductIndex);
+    this.toggleVisibility(this.elements.toggleSwitchContainer, true, 'block');
+    
+    if (this.elements.autoRotateToggle?.checked) {
+      this.showModelViewer();
+    } else {
+      this.toggleVisibility(this.elements.analysisImage, true, 'block');
+    }
+  }
+
+  showModelViewer() {
+    if (!this.state.isModelViewerLoaded && window.loadModelViewerWhenNeeded) {
+      window.loadModelViewerWhenNeeded();
+      this.state.isModelViewerLoaded = true;
+    }
+    if (this.elements.modelViewer) {
+      this.elements.modelViewer.style.display = 'block';
+    }
+  }
+
+  showDiagramsView() {
+    const threedContainer = document.querySelector('.threed-output-container');
+    if (threedContainer) {
+      threedContainer.style.display = 'flex';
+    }
+    this.toggleVisibility(this.elements.diagramsImage, true, 'block');
+  }
+
+  updateProductDots() {
+    this.elements.productDots.forEach((dot, i) => {
+      dot.classList.toggle('active', i === this.state.currentProductIndex);
     });
   }
 
-  // Add event listeners to each product pagination dot
-  productPaginationDots.forEach((dot, index) => {
-    dot.addEventListener('click', () => {
-      currentProductIndex = index;
-      updateProductPreview();
+  hideProjectViews() {
+    const views = [
+      'threedContainer', 'instructionsView', 'addOutputView',
+      'modelViewer', 'analysisImage', 'diagramsImage', 
+      'toggleSwitchContainer', 'selectedOutputPreview'
+    ];
+    
+    views.forEach(view => {
+      if (this.elements[view]) {
+        this.elements[view].style.display = 'none';
+      }
     });
-  });
 
-  // Handle transition to composition view
-  if (finalizeButton) {
-    finalizeButton.addEventListener('click', () => {
-      // Only transition to composition view if we're on the 4th output (index 3)
-      if (currentProductIndex === 3) {
-        // Hide other views but keep the container
-        if (threedContainer) threedContainer.style.display = 'none';
-        if (instructionsView) instructionsView.style.display = 'none';
-        if (addOutputView) addOutputView.style.display = 'none';
-        if (modelViewer) modelViewer.style.display = 'none';
-        if (analysisImage) analysisImage.style.display = 'none';
-        if (diagramsImage) diagramsImage.style.display = 'none';
-        if (toggleSwitchContainer) toggleSwitchContainer.style.display = 'none';
-        if (selectedOutputPreview) selectedOutputPreview.style.display = 'none';
+    if (this.elements.projectViewsContainer) {
+      this.elements.projectViewsContainer.style.display = 'none';
+    }
+    if (this.elements.projectPagination) {
+      this.elements.projectPagination.style.display = 'none';
+    }
+  }
 
-        // Show composition view
-        if (compositionView) {
-          compositionView.style.display = 'block';
-          initializeInteractiveComposition();
-        }
+  setCameraPreviewImages() {
+    if (this.elements.cameraViewPreview1 && this.elements.selectedOutputPreview) {
+      this.elements.cameraViewPreview1.src = this.elements.selectedOutputPreview.src;
+    }
+    if (this.elements.cameraViewPreview2 && this.elements.selectedOutputPreview) {
+      this.elements.cameraViewPreview2.src = this.elements.selectedOutputPreview.src;
+    }
+  }
+
+  // Create circular M characters
+  createCircularMs() {
+    const circles = document.querySelectorAll('.add-output-circle, .home-circle');
+    
+    circles.forEach(circle => {
+      if (!circle) return;
+
+      // Clear existing children
+      while (circle.firstChild) {
+        circle.removeChild(circle.firstChild);
+      }
+
+      const numMs = 12;
+      const radius = circle.classList.contains('home-circle') ? 150 : 100;
+
+      for (let i = 0; i < numMs; i++) {
+        const angle = (i / numMs) * 2 * Math.PI;
+        const x = radius * Math.cos(angle);
+        const y = radius * Math.sin(angle);
+
+        const mChar = document.createElement('div');
+        mChar.classList.add('m-char');
+        mChar.style.transform = `translate(-50%, -50%) translate(${x}px, ${y}px)`;
+        circle.appendChild(mChar);
       }
     });
   }
 
-  function initializeInteractiveComposition() {
+  // Interactive composition
+  initializeInteractiveComposition() {
     const compositionViewer = document.getElementById('compositionViewer');
     if (!compositionViewer) return;
 
-    // Create container for multiple models
+    if (window.loadCompositionViewerWhenNeeded) {
+      window.loadCompositionViewerWhenNeeded();
+    }
+
+    this.createInteractiveModels(compositionViewer);
+  }
+
+  createInteractiveModels(container) {
     const modelContainer = document.createElement('div');
     modelContainer.className = 'model-container';
-    compositionViewer.appendChild(modelContainer);
+    container.appendChild(modelContainer);
 
-    // Create and position each model
-    compositionModels.forEach((modelUrl, index) => {
-      const modelViewer = document.createElement('model-viewer');
-      modelViewer.src = modelUrl;
-      modelViewer.classList.add('interactive-model');
-      modelViewer.setAttribute('camera-controls', '');
-      modelViewer.setAttribute('auto-rotate', '');
-      modelViewer.setAttribute('interaction-prompt', 'none');
-      modelViewer.style.position = 'absolute';
-      
-      // Set initial positions in a circular arrangement
-      const angle = (index / compositionModels.length) * 2 * Math.PI;
-      const radius = 200; // Adjust based on your needs
-      const x = Math.cos(angle) * radius;
-      const z = Math.sin(angle) * radius;
-      
-      modelViewer.style.transform = `translate3d(${x}px, 0, ${z}px)`;
+    this.config.compositionModels.forEach((modelUrl, index) => {
+      const modelViewer = this.createInteractiveModel(modelUrl, index);
       modelContainer.appendChild(modelViewer);
-
-      // Add interaction handlers
-      let isDragging = false;
-      let startX, startY;
-      let currentX = x;
-      let currentZ = z;
-
-      modelViewer.addEventListener('mousedown', (e) => {
-        isDragging = true;
-        startX = e.clientX - currentX;
-        startY = e.clientY - currentZ;
-      });
-
-      modelViewer.addEventListener('mousemove', (e) => {
-        if (!isDragging) return;
-        
-        currentX = e.clientX - startX;
-        currentZ = e.clientY - startY;
-        
-        // Apply smooth movement
-        modelViewer.style.transform = `translate3d(${currentX}px, 0, ${currentZ}px)`;
-        
-        // Check for collisions with other models
-        const otherModels = Array.from(modelContainer.children).filter(m => m !== modelViewer);
-        otherModels.forEach(other => {
-          const rect1 = modelViewer.getBoundingClientRect();
-          const rect2 = other.getBoundingClientRect();
-          
-          if (isColliding(rect1, rect2)) {
-            // Create bounce effect
-            const angle = Math.atan2(
-              rect2.top - rect1.top,
-              rect2.left - rect1.left
-            );
-            currentX += Math.cos(angle) * 10;
-            currentZ += Math.sin(angle) * 10;
-            modelViewer.style.transform = `translate3d(${currentX}px, 0, ${currentZ}px)`;
-          }
-        });
-      });
-
-      modelViewer.addEventListener('mouseup', () => {
-        isDragging = false;
-      });
-
-      modelViewer.addEventListener('mouseleave', () => {
-        isDragging = false;
-      });
     });
   }
 
-  function isColliding(rect1, rect2) {
+  createInteractiveModel(modelUrl, index) {
+    const modelViewer = document.createElement('model-viewer');
+    modelViewer.src = modelUrl;
+    modelViewer.classList.add('interactive-model');
+    modelViewer.setAttribute('camera-controls', '');
+    modelViewer.setAttribute('auto-rotate', '');
+    modelViewer.setAttribute('interaction-prompt', 'none');
+    modelViewer.style.position = 'absolute';
+    
+    // Set initial position
+    const angle = (index / this.config.compositionModels.length) * 2 * Math.PI;
+    const radius = 200;
+    const x = Math.cos(angle) * radius;
+    const z = Math.sin(angle) * radius;
+    
+    modelViewer.style.transform = `translate3d(${x}px, 0, ${z}px)`;
+    
+    this.addModelInteractions(modelViewer, x, z);
+    
+    return modelViewer;
+  }
+
+  addModelInteractions(modelViewer, initialX, initialZ) {
+    let isDragging = false;
+    let startX, startY;
+    let currentX = initialX;
+    let currentZ = initialZ;
+
+    const handleMouseDown = (e) => {
+      isDragging = true;
+      startX = e.clientX - currentX;
+      startY = e.clientY - currentZ;
+    };
+
+    const handleMouseMove = (e) => {
+      if (!isDragging) return;
+      
+      currentX = e.clientX - startX;
+      currentZ = e.clientY - startY;
+      
+      modelViewer.style.transform = `translate3d(${currentX}px, 0, ${currentZ}px)`;
+      this.checkCollisions(modelViewer, currentX, currentZ);
+    };
+
+    const handleMouseUp = () => {
+      isDragging = false;
+    };
+
+    modelViewer.addEventListener('mousedown', handleMouseDown);
+    modelViewer.addEventListener('mousemove', handleMouseMove);
+    modelViewer.addEventListener('mouseup', handleMouseUp);
+    modelViewer.addEventListener('mouseleave', handleMouseUp);
+  }
+
+  checkCollisions(currentModel, currentX, currentZ) {
+    const modelContainer = currentModel.parentElement;
+    const otherModels = Array.from(modelContainer.children).filter(m => m !== currentModel);
+    
+    otherModels.forEach(other => {
+      const rect1 = currentModel.getBoundingClientRect();
+      const rect2 = other.getBoundingClientRect();
+      
+      if (this.isColliding(rect1, rect2)) {
+        const angle = Math.atan2(rect2.top - rect1.top, rect2.left - rect1.left);
+        currentX += Math.cos(angle) * 10;
+        currentZ += Math.sin(angle) * 10;
+        currentModel.style.transform = `translate3d(${currentX}px, 0, ${currentZ}px)`;
+      }
+    });
+  }
+
+  isColliding(rect1, rect2) {
     return !(rect1.right < rect2.left || 
              rect1.left > rect2.right || 
              rect1.bottom < rect2.top || 
              rect1.top > rect2.bottom);
   }
 
-  autoRotateToggle.addEventListener('change', () => {
-    // Only update if we are on the first product view
-    if (currentProductIndex === 0) {
-      updateProductPreview();
-    }
-  });
+  // Mouse follower
+  initializeMouseFollower() {
+    const mouseFollower = document.createElement('div');
+    mouseFollower.classList.add('mouse-follower');
+    document.body.appendChild(mouseFollower);
 
-  // — Initialize view —
-  updateOutputView();
+    let mouseX = 0;
+    let mouseY = 0;
+    let followerX = 0;
+    let followerY = 0;
 
-  // --- Keyboard handling for prompt input ---
-  const designPromptInput = document.getElementById('designPrompt');
-  const container = document.getElementById('container');
-
-  if (designPromptInput && container) {
-    designPromptInput.addEventListener('focus', () => {
-      container.classList.add('keyboard-active');
+    // Update mouse position
+    document.addEventListener('mousemove', (e) => {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
     });
 
-    designPromptInput.addEventListener('blur', () => {
-      container.classList.remove('keyboard-active');
+    // Smooth following animation
+    const animateFollower = () => {
+      const speed = 0.1;
+      
+      followerX += (mouseX - followerX) * speed;
+      followerY += (mouseY - followerY) * speed;
+      
+      mouseFollower.style.left = followerX + 'px';
+      mouseFollower.style.top = followerY + 'px';
+      
+      requestAnimationFrame(animateFollower);
+    };
+    
+    animateFollower();
+
+    // Click bounce effect
+    document.addEventListener('click', () => {
+      mouseFollower.classList.add('bounce');
+      setTimeout(() => {
+        mouseFollower.classList.remove('bounce');
+      }, 300);
     });
+
+    // Hover effects
+    this.addMouseFollowerHovers(mouseFollower);
   }
 
-  // Handle camera input from the "Add your output" screen
-  if (addOutputCameraInput) {
-    addOutputCameraInput.addEventListener("change", e => {
-      const file = e.target.files[0];
-      if (!file) return;
-
-      loadPreview(file);
-
-      if (addOutputView) addOutputView.style.display = 'none';
-      if (nextStepLayout) nextStepLayout.style.display = 'none';
-      if (canvasWrapper) canvasWrapper.style.display = 'flex';
-      if (topBarText) topBarText.textContent = 'Capture';
-      if (backButton) backButton.style.display = 'none';
-      if (projectNameContainer) projectNameContainer.style.display = 'flex';
-      if (finalizeButton) finalizeButton.style.display = 'none';
-      if (promptAreaTop) promptAreaTop.style.display = 'none';
-      if (footerCaptureControls) footerCaptureControls.style.display = 'flex';
-      if (promptArea) promptArea.style.display = 'none';
+  addMouseFollowerHovers(mouseFollower) {
+    const interactiveElements = document.querySelectorAll(
+      'button, .logo, .footer-button, .nav-btn, .choose-button'
+    );
+    
+    interactiveElements.forEach(element => {
+      element.addEventListener('mouseenter', () => {
+        mouseFollower.classList.add('hover');
+      });
+      
+      element.addEventListener('mouseleave', () => {
+        mouseFollower.classList.remove('hover');
+      });
     });
   }
+}
 
-  // "Add your output" button logic
-  const addOutputBtn = document.getElementById('addOutputBtn');
-  const cameraCaptureView = document.getElementById('cameraCaptureView');
-  const projectViewsContainer = document.querySelector('.project-views-container');
-  const projectPagination = document.querySelector('.project-pagination');
-  const cameraViewPreview1 = document.getElementById('cameraViewPreview1');
-  const cameraViewPreview2 = document.getElementById('cameraViewPreview2');
-
-  if (addOutputBtn) {
-    addOutputBtn.addEventListener('click', () => {
-        // Hide the "add output" view
-        if (addOutputView) addOutputView.style.display = 'none';
-
-        // Hide the main project view content and pagination
-        if (projectViewsContainer) projectViewsContainer.style.display = 'none';
-        if (projectPagination) projectPagination.style.display = 'none';
-        
-        // Show the camera view itself
-        if (cameraCaptureView) cameraCaptureView.style.display = 'flex';
-
-        // Set the preview images in the camera view
-        if (cameraViewPreview1 && selectedOutputPreview) {
-          cameraViewPreview1.src = selectedOutputPreview.src;
-        }
-        if (cameraViewPreview2 && selectedOutputPreview) {
-          cameraViewPreview2.src = selectedOutputPreview.src;
-        }
-
-        // Ensure the overall project layout and header are visible
-        if (nextStepLayout) nextStepLayout.style.display = 'flex';
-        if (topBarText) topBarText.textContent = 'Project 4 Stool';
-        if (backButton) backButton.style.display = 'flex';
-        if (finalizeButton) finalizeButton.style.display = 'none';
-    });
-  }
+// Initialize the application when DOM is loaded
+document.addEventListener('DOMContentLoaded', () => {
+  window.formatApp = new FormatApp();
 });
+
+// Expose for external access if needed
+window.FormatApp = FormatApp;

@@ -4,9 +4,18 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>forMat</title>
+  
+  <!-- Preload critical assets for faster loading -->
+  <link rel="preload" href="assets/FormatLogo.png" as="image">
+  <link rel="preload" href="assets/homelogo.png" as="image">
+  <link rel="preload" href="assets/GalleryIcon.png" as="image">
+  <link rel="preload" href="assets/ForwardButton.png" as="image">
+  <link rel="preload" href="style.css" as="style">
+  
   <link rel="stylesheet" href="style.css" />
+  
+  <!-- Load font with display swap for faster rendering -->
   <link href="https://fonts.googleapis.com/css2?family=PT+Mono&display=swap" rel="stylesheet">
-  <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.3.0/model-viewer.min.js"></script>
 </head>
 <body>
   <div class="container" id="container">
@@ -19,21 +28,37 @@
     <!-- Top Bar -->
     <div class="divider" id="topBar">
       <div class="top-bar-left">
-        <button id="backButton" class="back-button" style="display: none;">&larr;</button>
-        <span id="topBarText">Capture</span>
+        <button id="backButton" class="back-button" style="display: none;">
+          <img src="assets/BackButton.png" alt="Back" style="width: 16px; height: 16px;" onerror="this.style.display='none'; this.parentElement.innerHTML += '&larr;';" />
+        </button>
+        <span id="topBarText" style="display: none;">Home</span>
       </div>
-      <div class="project-name">
-        <span id="projectName">Project 4 XYZ…</span>
-        <button id="editProjectBtn">✎</button>
-        <input type="text" id="projectInput" style="display:none;" />
+      <div class="project-name" style="display: none;">
+        <span id="projectName">Project XYZ</span>
       </div>
-      <button id="finalizeButton" class="forward-button" style="display: none;">&rarr;</button>
+      <button id="finalizeButton" class="forward-button" style="display: none;">
+        <img src="assets/ForwardButton.png" alt="Forward" style="width: 16px; height: 16px;" />
+      </button>
     </div>
 
-    <div class="canvas-wrapper" id="canvasWrapper">
+    <!-- Home View -->
+    <div class="home-view" id="homeView">
+      <div class="home-container">
+        <div class="home-circle">
+          <!-- The M letters will be added via JS -->
+        </div>
+        <div class="home-center">
+          <button class="home-plus-button" id="homeStartButton">
+            <img src="assets/homelogo.png" alt="Start" onerror="this.style.display='none'; this.parentElement.innerHTML += '<span class=\'plus-icon\'>+</span>';" />
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="canvas-wrapper" id="canvasWrapper" style="display: none;">
       <!-- Canvas Area -->
       <div id="canvasArea" class="canvas">
-        <p id="placeholderText">Def...</p>
+        <p id="placeholderText"></p>
         <img id="previewImage" src="" alt="" style="display:none;" />
 
         <!-- Corner guides -->
@@ -44,18 +69,41 @@
       </div>
     </div>
 
+    <!-- NEW: Prompt Page - Intermediate page between capture and output -->
+    <div class="prompt-page" id="promptPage" style="display: none;">
+      <div class="captured-image-small" id="capturedImageSmall">
+        <img id="capturedPreviewSmall" src="" alt="Captured Material" />
+      </div>
+      <div class="prompt-input-area">
+        <textarea id="promptInput" placeholder="Design Prompt..." rows="1"></textarea>
+        <button id="sendButton" class="send-button">
+          <img src="assets/ForwardButton.png" alt="Send" />
+        </button>
+      </div>
+      <div class="prompt-pagination">
+        <span class="dot"></span>
+        <span class="dot"></span>
+        <span class="dot active"></span>
+        <span class="dot"></span>
+      </div>
+    </div>
+
     <!-- Output -->
     <div class="output-area" id="outputArea" style="display:none;">
       <div class="prompt-area-top" id="promptAreaTop">
         <textarea id="designPromptTop" placeholder="Design Prompt..." rows="1"></textarea>
       </div>
       <div class="output-canvas">
-        <button class="nav-btn left" id="prevOutput">←</button>
+        <button class="nav-btn left" id="prevOutput">
+          <img src="assets/ForwardButton.png" alt="Previous" style="width: 16px; height: 16px; transform: rotate(180deg);" />
+        </button>
         <img id="outputImage" src="" alt="Generated Output" />
         <button id="chooseButton" class="choose-button">
-          <img src="assets/ChoseButton.png" alt="Choose Design" />
+          <img src="assets/ChoseButton.png" alt="Choose" />
         </button>
-        <button class="nav-btn right" id="nextOutput">→</button>
+        <button class="nav-btn right" id="nextOutput">
+          <img src="assets/ForwardButton.png" alt="Next" style="width: 16px; height: 16px;" />
+        </button>
       </div>
       <div class="output-pagination">
         <span class="dot active"></span>
@@ -70,7 +118,10 @@
         <img id="selectedOutputPreview" src="" alt="Selected Design" class="small-output-preview" />
       </div>
       <div class="threed-output-container">
-        <model-viewer id="modelViewer" src="assets/stool.glb" alt="3D Stool Model" auto-rotate camera-controls></model-viewer>
+        <!-- Model viewer will be loaded dynamically when needed -->
+        <div id="modelViewer" class="model-placeholder" data-src="assets/stool.glb" data-alt="3D Stool Model">
+          <div class="loading-placeholder">Loading 3D Model...</div>
+        </div>
         <img src="assets/analysis.png" alt="Analysis" id="analysisImage" style="display: none;">
         <img src="assets/Diagrams.png" alt="Diagrams" id="diagramsImage" style="display: none;">
         <div class="toggle-switch-container">
@@ -135,31 +186,41 @@
       <!-- 3D Composition View -->
       <div id="compositionView" class="composition-view">
         <div class="composition-container">
-          <model-viewer 
-            id="compositionViewer" 
-            camera-controls
-            auto-rotate
-            auto-rotate-delay="0"
-            rotation-per-second="30deg"
-            interaction-prompt="none"
-            camera-orbit="45deg 55deg 2.5m"
-            min-camera-orbit="auto auto auto"
-            max-camera-orbit="auto auto auto"
-            min-field-of-view="30deg"
-            max-field-of-view="60deg"
-            environment-image="neutral"
-            exposure="1"
-            shadow-intensity="1"
-            shadow-softness="0"
-          ></model-viewer>
+          <!-- Composition viewer will be loaded when needed -->
+          <div id="compositionViewer" class="composition-placeholder">
+            <div class="loading-placeholder">Loading Composition...</div>
+          </div>
         </div>
       </div>
 
-      <div class="output-pagination">
-        <span class="dot active"></span>
-        <span class="dot"></span>
-        <span class="dot"></span>
-        <span class="dot"></span>
+      <!-- Camera Capture View -->
+      <div id="cameraCaptureView" class="camera-capture-view" style="display: none;">
+        <div class="camera-capture-content">
+          <div class="camera-preview-container">
+            <img id="cameraViewPreview1" src="" alt="Preview 1" class="camera-preview-image" />
+            <img id="cameraViewPreview2" src="" alt="Preview 2" class="camera-preview-image" />
+          </div>
+        </div>
+      </div>
+
+      <!-- Project Views Container -->
+      <div class="project-views-container">
+        <div class="output-pagination">
+          <span class="dot active"></span>
+          <span class="dot"></span>
+          <span class="dot"></span>
+          <span class="dot"></span>
+        </div>
+      </div>
+
+      <!-- Project Pagination -->
+      <div class="project-pagination">
+        <div class="output-pagination">
+          <span class="dot active"></span>
+          <span class="dot"></span>
+          <span class="dot"></span>
+          <span class="dot"></span>
+        </div>
       </div>
     </div>
 
@@ -200,30 +261,135 @@
 
     <!-- Footer -->
     <div class="footer" id="mainFooter">
-      <div id="footerCaptureControls">
+      <div id="footerCaptureControls" style="display: none;">
         <label for="fileInputGallery" class="footer-button">
-          <!-- Icon removed to match design -->
+          <img src="assets/GalleryIcon.png" alt="Gallery" style="width: 16px; height: 16px;" />
         </label>
         <input type="file" id="fileInputGallery" accept="image/*" style="display:none;" />
+        
         <label for="fileInputCamera" class="footer-button camera-button">
           <div class="middle-dot"></div>
         </label>
         <input type="file" id="fileInputCamera" accept="image/*" capture="environment" style="display:none;" />
+        
         <button id="forwardButton" class="footer-button">
-          <img src="assets/ForwardButton.png" alt="Forward Icon" />
+          <img src="assets/ForwardButton.png" alt="Forward" />
         </button>
       </div>
 
       <div class="prompt-area" id="promptArea" style="display:none;">
         <textarea id="designPrompt" placeholder="Design Prompt..." rows="1"></textarea>
         <button id="promptForward" class="prompt-forward">
-          <img src="assets/ForwardButton.png" alt="Submit Prompt" />
+          <img src="assets/ForwardButton.png" alt="Forward" />
         </button>
       </div>
-      <div class="footer-divider"></div>
+      <div class="footer-divider" style="display: none;"></div>
     </div>
   </div>
 
+  <!-- Load main app script -->
   <script src="app.js"></script>
+  
+  <!-- Model Viewer Lazy Loading Script -->
+  <script>
+    // Global flag to track if model-viewer is loaded
+    window.modelViewerLoaded = false;
+    
+    // Function to load model-viewer library
+    function loadModelViewerLibrary() {
+      return new Promise((resolve, reject) => {
+        if (window.modelViewerLoaded) {
+          resolve();
+          return;
+        }
+        
+        const script = document.createElement('script');
+        script.type = 'module';
+        script.src = 'https://unpkg.com/@google/model-viewer@3.3.0/dist/model-viewer.min.js';
+        script.onload = () => {
+          window.modelViewerLoaded = true;
+          resolve();
+        };
+        script.onerror = reject;
+        document.head.appendChild(script);
+      });
+    }
+    
+    // Function to initialize a model viewer element
+    function initializeModelViewer(container, src, attributes = {}) {
+      return loadModelViewerLibrary().then(() => {
+        const modelViewer = document.createElement('model-viewer');
+        modelViewer.src = src;
+        
+        // Set default attributes
+        modelViewer.setAttribute('auto-rotate', '');
+        modelViewer.setAttribute('camera-controls', '');
+        
+        // Set custom attributes
+        Object.keys(attributes).forEach(key => {
+          modelViewer.setAttribute(key, attributes[key]);
+        });
+        
+        // Replace placeholder
+        container.innerHTML = '';
+        container.appendChild(modelViewer);
+        
+        return modelViewer;
+      });
+    }
+    
+    // Load model viewer when user reaches 3D content
+    function loadModelViewerWhenNeeded() {
+      const modelContainer = document.getElementById('modelViewer');
+      if (modelContainer && modelContainer.classList.contains('model-placeholder')) {
+        const src = modelContainer.getAttribute('data-src');
+        const alt = modelContainer.getAttribute('data-alt');
+        
+        initializeModelViewer(modelContainer, src, {
+          'alt': alt,
+          'id': 'modelViewer'
+        }).catch(error => {
+          console.error('Failed to load model viewer:', error);
+          modelContainer.innerHTML = '<div class="error-placeholder">Failed to load 3D model</div>';
+        });
+      }
+    }
+    
+    // Load composition viewer when needed
+    function loadCompositionViewerWhenNeeded() {
+      const compositionContainer = document.getElementById('compositionViewer');
+      if (compositionContainer && compositionContainer.classList.contains('composition-placeholder')) {
+        initializeModelViewer(compositionContainer, '', {
+          'camera-controls': '',
+          'auto-rotate': '',
+          'auto-rotate-delay': '0',
+          'rotation-per-second': '30deg',
+          'interaction-prompt': 'none',
+          'camera-orbit': '45deg 55deg 2.5m',
+          'min-camera-orbit': 'auto auto auto',
+          'max-camera-orbit': 'auto auto auto',
+          'min-field-of-view': '30deg',
+          'max-field-of-view': '60deg',
+          'environment-image': 'neutral',
+          'exposure': '1',
+          'shadow-intensity': '1',
+          'shadow-softness': '0',
+          'id': 'compositionViewer'
+        }).then(() => {
+          // Initialize interactive composition after model viewer is ready
+          if (window.initializeInteractiveComposition) {
+            window.initializeInteractiveComposition();
+          }
+        }).catch(error => {
+          console.error('Failed to load composition viewer:', error);
+          compositionContainer.innerHTML = '<div class="error-placeholder">Failed to load composition</div>';
+        });
+      }
+    }
+    
+    // Expose functions globally for app.js
+    window.loadModelViewerWhenNeeded = loadModelViewerWhenNeeded;
+    window.loadCompositionViewerWhenNeeded = loadCompositionViewerWhenNeeded;
+  </script>
 </body>
 </html>
