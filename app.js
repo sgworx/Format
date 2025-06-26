@@ -634,22 +634,28 @@ class FormatApp {
 
   // NEW: Camera handling
   startCamera() {
-    // If camera already active, do nothing
-    if (this.state.cameraStream) return;
+    if (this.state.cameraStream) {
+      console.log('Camera already active');
+      return;
+    }
 
     if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
       console.warn('Camera API not supported.');
       return;
     }
 
+    console.log('Requesting camera...');
     navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' }, audio: false })
       .then((stream) => {
+        console.log('Camera stream received', stream);
         this.state.cameraStream = stream;
         if (this.elements.cameraVideo) {
           this.elements.cameraVideo.srcObject = stream;
           this.elements.cameraVideo.style.display = 'block';
+          this.elements.cameraVideo.style.background = 'transparent';
+          this.elements.cameraVideo.style.zIndex = 10;
+          this.elements.cameraVideo.play();
         }
-        // Hide placeholder when camera active
         if (this.elements.placeholderText) {
           this.elements.placeholderText.style.display = 'none';
         }
