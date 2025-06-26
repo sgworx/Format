@@ -626,10 +626,13 @@ class FormatApp {
     const url = URL.createObjectURL(file);
     this.elements.previewImage.src = url;
     this.elements.previewImage.style.display = 'block';
-    
+    this.elements.previewImage.style.zIndex = '20';
+    console.log('Preview shown:', url);
+
     // Hide the live camera video when a still is captured
     if (this.elements.cameraVideo) {
       this.elements.cameraVideo.style.display = 'none';
+      this.elements.cameraVideo.style.zIndex = '2';
     }
 
     if (this.elements.placeholderText) {
