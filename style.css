@@ -546,8 +546,7 @@ body {
   height: 80px;
   padding: 0;
   border: 2px solid #000;
-  background: transparent !important;
-  box-shadow: none !important;
+  background: rgba(255, 255, 255, 0.9);
   border-radius: 50%;
   cursor: pointer;
   z-index: 100;
@@ -564,11 +563,10 @@ body {
 
 /* Style the image inside choose button */
 .choose-button img {
-  width: 40px !important;
-  height: 40px !important;
+  width: 80px !important;
+  height: 80px !important;
   opacity: 1 !important;
   display: block !important;
-  background: transparent !important;
 }
 
 /* Hide the span with "Choose" text */
