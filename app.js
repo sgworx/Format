@@ -504,8 +504,22 @@ class FormatApp {
     }
     if (this.elements.canvasArea) {
       this.elements.canvasArea.classList.remove('small-preview');
+      this.elements.canvasArea.style.position = 'relative';
+      this.elements.canvasArea.style.margin = '0';
+      this.elements.canvasArea.style.padding = '0';
+    }
+    if (this.elements.cameraVideo) {
+      this.elements.cameraVideo.style.position = 'absolute';
+      this.elements.cameraVideo.style.top = '0';
+      this.elements.cameraVideo.style.left = '0';
+      this.elements.cameraVideo.style.width = '100%';
+      this.elements.cameraVideo.style.height = '100%';
+      this.elements.cameraVideo.style.objectFit = 'cover';
+      this.elements.cameraVideo.style.margin = '0';
+      this.elements.cameraVideo.style.padding = '0';
     }
     
+    this.startCamera();
     this.updateTopBar('Capture');
   }
 
