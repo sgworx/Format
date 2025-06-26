@@ -135,10 +135,25 @@ class FormatApp {
       );
     }
 
-    if (elements.fileInputCamera) {
-      elements.fileInputCamera.addEventListener('change', (e) => 
-        boundMethods.handleFileUpload(e.target.files[0])
-      );
+    // Override camera button to capture from live video instead of file input
+    const cameraButton = document.querySelector('.camera-button');
+    if (cameraButton && elements.cameraVideo) {
+      cameraButton.addEventListener('click', () => {
+        // Create a canvas to draw the current video frame
+        const video = elements.cameraVideo;
+        const canvas = document.createElement('canvas');
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        // Convert to blob and show as preview
+        canvas.toBlob(blob => {
+          if (blob) {
+            const file = new File([blob], 'capture.png', { type: 'image/png' });
+            boundMethods.handleFileUpload(file);
+          }
+        }, 'image/png');
+      });
     }
 
     if (elements.addOutputCameraInput) {
@@ -504,9 +519,6 @@ class FormatApp {
     }
     if (this.elements.canvasArea) {
       this.elements.canvasArea.classList.remove('small-preview');
-      this.elements.canvasArea.style.position = 'relative';
-      this.elements.canvasArea.style.margin = '0';
-      this.elements.canvasArea.style.padding = '0';
     }
     if (this.elements.cameraVideo) {
       this.elements.cameraVideo.style.position = 'absolute';
