@@ -627,6 +627,11 @@ class FormatApp {
     this.elements.previewImage.src = url;
     this.elements.previewImage.style.display = 'block';
     
+    // Hide the live camera video when a still is captured
+    if (this.elements.cameraVideo) {
+      this.elements.cameraVideo.style.display = 'none';
+    }
+
     if (this.elements.placeholderText) {
       this.elements.placeholderText.style.display = 'none';
     }
