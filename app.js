@@ -135,22 +135,21 @@ class FormatApp {
       );
     }
 
-    // Override camera button to capture from live video instead of file input
+    // Camera shutter button: capture from live video
     const cameraButton = document.querySelector('.camera-button');
-    if (cameraButton && elements.cameraVideo) {
+    if (cameraButton && this.elements.cameraVideo) {
       cameraButton.addEventListener('click', () => {
-        // Create a canvas to draw the current video frame
-        const video = elements.cameraVideo;
+        const video = this.elements.cameraVideo;
+        if (!video || video.readyState < 2) return; // Not ready
         const canvas = document.createElement('canvas');
         canvas.width = video.videoWidth;
         canvas.height = video.videoHeight;
         const ctx = canvas.getContext('2d');
         ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-        // Convert to blob and show as preview
         canvas.toBlob(blob => {
           if (blob) {
             const file = new File([blob], 'capture.png', { type: 'image/png' });
-            boundMethods.handleFileUpload(file);
+            this.handleFileUpload(file);
           }
         }, 'image/png');
       });
