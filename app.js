@@ -137,19 +137,20 @@ class FormatApp {
 
     // Camera shutter button: capture from live video
     const cameraButton = document.querySelector('.camera-button');
+    const self = this;
     if (cameraButton && this.elements.cameraVideo) {
-      cameraButton.addEventListener('click', () => {
-        const video = this.elements.cameraVideo;
+      cameraButton.addEventListener('click', function() {
+        const video = self.elements.cameraVideo;
         if (!video || video.readyState < 2) return; // Not ready
         const canvas = document.createElement('canvas');
         canvas.width = video.videoWidth;
         canvas.height = video.videoHeight;
         const ctx = canvas.getContext('2d');
         ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-        canvas.toBlob(blob => {
+        canvas.toBlob(function(blob) {
           if (blob) {
             const file = new File([blob], 'capture.png', { type: 'image/png' });
-            this.handleFileUpload(file);
+            self.handleFileUpload(file);
           }
         }, 'image/png');
       });
